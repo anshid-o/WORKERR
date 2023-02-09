@@ -1,0 +1,463 @@
+// import 'dart:html';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter/src/foundation/key.dart';
+// import 'package:flutter/src/widgets/framework.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:workerr_app/core/colors.dart';
+import 'package:workerr_app/core/constants.dart';
+import 'package:workerr_app/presentation/user/screens/main/chat/widgets/message.dart';
+
+class ChatScreen2 extends StatefulWidget {
+  String phone;
+  String name;
+  String id;
+  ImageProvider img;
+  ChatScreen2(
+      {Key? key,
+      required this.phone,
+      required this.name,
+      required this.img,
+      required this.id})
+      : super(key: key);
+
+  @override
+  State<ChatScreen2> createState() => _ChatScreen2State();
+}
+
+class _ChatScreen2State extends State<ChatScreen2> {
+  TextEditingController msg = TextEditingController();
+  final auth = FirebaseAuth.instance;
+  final storeUser = FirebaseFirestore.instance;
+  List<Message> messages = [
+    // Message(
+    //     text: 'Hi',
+    //     date: DateTime.now().subtract(const Duration(days: 5)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'Hello',
+    //     date: DateTime.now().subtract(const Duration(days: 5)),
+    //     isSentByMe: true),
+    // Message(
+    //     text: 'Can i call you at the moment ?',
+    //     date: DateTime.now().subtract(const Duration(days: 4)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'I want to discuss about your requests',
+    //     date: DateTime.now().subtract(const Duration(days: 4)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'Ok',
+    //     date: DateTime.now().subtract(const Duration(days: 3)),
+    //     isSentByMe: true),
+    // Message(
+    //     text: 'You can call me now',
+    //     date: DateTime.now().subtract(const Duration(days: 3)),
+    //     isSentByMe: true),
+    // Message(
+    //     text: 'ok',
+    //     date: DateTime.now().subtract(const Duration(days: 3)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'Thanks',
+    //     date: DateTime.now().subtract(const Duration(days: 3)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'Hi',
+    //     date: DateTime.now().subtract(const Duration(days: 1)),
+    //     isSentByMe: true),
+    // Message(
+    //     text: 'Hello',
+    //     date: DateTime.now().subtract(const Duration(days: 1)),
+    //     isSentByMe: false),
+    // Message(
+    //     text: 'When will you reach here ?',
+    //     date: DateTime.now().subtract(const Duration(days: 1)),
+    //     isSentByMe: true),
+  ];
+  // .reversed.toList();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        shadowColor: Colors.white,
+        // bottomOpacity: 0,
+        // foregroundColor: Colors.white,
+
+        backgroundColor: kc30.withGreen(18),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_arrow_left,
+            color: kc60,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Row(children: [
+          CircleAvatar(
+            radius: 20,
+            // backgroundColor: kblue2,
+            backgroundImage: widget.img,
+          ),
+          kwidth,
+          Text(
+            widget.name,
+            style: const TextStyle(
+              color: kc60,
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ]),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final phoneNumber = '+91${widget.phone}';
+              final url = Uri(scheme: 'tel', host: phoneNumber);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(
+                  url,
+                );
+              }
+            },
+            splashColor: Colors.transparent,
+            icon: const Icon(
+              CupertinoIcons.phone_fill_arrow_up_right,
+              color: kc10,
+            ),
+          ),
+          kwidth,
+        ],
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: storeUser
+            .collection("Messages")
+            .where('cid', whereIn: [
+              '${auth.currentUser!.uid}${widget.id}',
+              '${widget.id}${auth.currentUser!.uid}'
+            ])
+            .orderBy('time')
+            .snapshots(),
+        // .where({"status", "is", "Requested"}).snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(
+                child: CircularProgressIndicator(
+                  value: 60,
+                  backgroundColor: kc60,
+                ),
+              );
+            default:
+              // fill here
+              messages.clear();
+              for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                DocumentSnapshot document = snapshot.data!.docs[i];
+                final message = Message(
+                    text: document['message'],
+                    date: (document['time'] as Timestamp).toDate(),
+                    isSentByMe: document['from'] == auth.currentUser!.uid
+                        ? true
+                        : false);
+
+                messages.add(message);
+              }
+              return snapshot.data!.docs.isNotEmpty
+                  ?
+
+                  //  ListView.builder(
+                  //     itemBuilder: (context, index) {
+                  //       DocumentSnapshot document =
+                  //           snapshot.data!.docs[index];
+                  //       return RequestCard2(
+                  //           date: document['date'],
+                  //           work: document['job'],
+                  //           det: document['details'],
+                  //           from: document['from'],
+                  //           uid: document['to']);
+                  //     },
+                  //     itemCount: snapshot.data!.docs.length,
+                  //   )
+                  Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            color: const Color.fromARGB(255, 238, 225, 225),
+                            child: GroupedListView(
+                              reverse: true,
+                              order: GroupedListOrder.DESC,
+                              useStickyGroupSeparators: true,
+                              floatingHeader: true,
+                              padding: const EdgeInsets.all(9),
+                              groupHeaderBuilder: (Message message) => SizedBox(
+                                height: 40,
+                                child: Center(
+                                  child: Card(
+                                    color: Color.fromARGB(255, 187, 187, 187),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(DateFormat.yMMMd()
+                                          .format(message.date)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              itemBuilder: (context, Message message) => Align(
+                                alignment: message.isSentByMe
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: const Radius.circular(15),
+                                          topRight: const Radius.circular(15),
+                                          bottomLeft: message.isSentByMe
+                                              ? const Radius.circular(15)
+                                              : const Radius.circular(0),
+                                          bottomRight: message.isSentByMe
+                                              ? const Radius.circular(0)
+                                              : const Radius.circular(15),
+                                        ),
+                                        color: message.isSentByMe
+                                            ? Colors.blueAccent
+                                            : kc60),
+                                    // elevation: 8,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            message.text,
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          ksize(x: 5),
+                                          Text(
+                                            // DateFormat.jms().format(
+                                            //     DateFormat("hh:mm:ss")
+                                            //         .parse('${message.date}')),
+                                            DateFormat.jm()
+                                                .format(message.date),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 10),
+                                            textAlign: TextAlign.end,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              elements: messages,
+                              groupBy: (Message message) => DateTime(
+                                message.date.year,
+                                message.date.month,
+                                message.date.day,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.emoji_emotions_outlined,
+                                    color: Colors.grey,
+                                  )),
+                              Expanded(
+                                  child: TextFormField(
+                                controller: msg,
+                                onFieldSubmitted: (value) {
+                                  if (value.isNotEmpty) {
+                                    final now = DateTime.now();
+                                    String formatter =
+                                        DateFormat('yMd').format(now);
+                                    String time = DateFormat.jms().toString();
+                                    storeUser.collection("Messages").doc().set({
+                                      'cid':
+                                          '${auth.currentUser!.uid}${widget.id}',
+                                      'from': auth.currentUser!.uid,
+                                      'to': widget.id,
+                                      'message': value,
+                                      'date': formatter,
+                                      'time': now
+                                    });
+                                    // final message = Message(
+                                    //     text: value,
+                                    //     date: DateTime.now(),
+                                    //     isSentByMe: true);
+                                    // setState(() {
+                                    //   messages.add(message);
+                                    // });
+                                    msg.clear();
+                                  }
+                                },
+                                decoration: const InputDecoration(
+                                  hintText: 'Enter Message...',
+                                ),
+                              )),
+                              IconButton(
+                                onPressed: () {
+                                  if (msg.text.isNotEmpty) {
+                                    final now = DateTime.now();
+                                    String formatter =
+                                        DateFormat('yMd').format(now);
+                                    String time = DateFormat.jms().toString();
+                                    storeUser.collection("Messages").doc().set({
+                                      'cid':
+                                          '${auth.currentUser!.uid}${widget.id}',
+                                      'from': auth.currentUser!.uid,
+                                      'to': widget.id,
+                                      'message': msg.text,
+                                      'date': formatter,
+                                      'time': now
+                                    });
+                                    // final message = Message(
+                                    //     text: msg.text,
+                                    //     date: DateTime.now(),
+                                    //     isSentByMe: true);
+                                    // setState(() {
+                                    //   messages.add(message);
+                                    // });
+                                    msg.clear();
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.send,
+                                  color: Colors.teal,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: kc60,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'There are doesn\'t found any requests.',
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    color: kc30,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.emoji_emotions_outlined,
+                                    color: Colors.grey,
+                                  )),
+                              Expanded(
+                                  child: TextFormField(
+                                controller: msg,
+                                onFieldSubmitted: (value) {
+                                  if (value.isNotEmpty) {
+                                    final now = DateTime.now();
+                                    String formatter =
+                                        DateFormat('yMd').format(now);
+                                    String time = DateFormat.jms().toString();
+                                    storeUser.collection("Messages").doc().set({
+                                      'cid':
+                                          '${auth.currentUser!.uid}${widget.id}',
+                                      'from': auth.currentUser!.uid,
+                                      'to': widget.id,
+                                      'message': value,
+                                      'date': formatter,
+                                      'time': now
+                                    });
+                                    // final message = Message(
+                                    //     text: value,
+                                    //     date: DateTime.now(),
+                                    //     isSentByMe: true);
+                                    // setState(() {
+                                    //   messages.add(message);
+                                    // });
+                                    msg.clear();
+                                  }
+                                },
+                                decoration: const InputDecoration(
+                                  hintText: 'Enter Message...',
+                                ),
+                              )),
+                              IconButton(
+                                onPressed: () {
+                                  if (msg.text.isNotEmpty) {
+                                    final now = DateTime.now();
+                                    String formatter =
+                                        DateFormat('yMd').format(now);
+                                    String time = DateFormat.jms().toString();
+                                    storeUser.collection("Messages").doc().set({
+                                      'cid':
+                                          '${auth.currentUser!.uid}${widget.id}',
+                                      'from': auth.currentUser!.uid,
+                                      'to': widget.id,
+                                      'message': msg.text,
+                                      'date': formatter,
+                                      'time': now
+                                    });
+                                    // final message = Message(
+                                    //     text: msg.text,
+                                    //     date: DateTime.now(),
+                                    //     isSentByMe: true);
+                                    // setState(() {
+                                    //   messages.add(message);
+                                    // });
+                                    msg.clear();
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.send,
+                                  color: Colors.teal,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+          }
+        },
+      ),
+    );
+  }
+}
