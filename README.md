@@ -1,10 +1,8 @@
-# workerr_app
+# Project-Workerr
+My collage final year project
 
-A new Flutter project.
+Workerr is a cross Platform Mobile application that used to connect users with workers. The app is developed using flutter and Use firebase for its backend services like authentication and cloud firestore.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
