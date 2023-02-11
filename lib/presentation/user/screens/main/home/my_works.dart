@@ -5,20 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
-import 'package:workerr_app/presentation/user/screens/main/home/nav_drawer.dart';
+// import 'package:workerr_app/presentation/user/screens/main/home/nav_drawer.dart';
 
 import 'package:workerr_app/presentation/user/widgets/my_tabbed_appbar.dart';
 
 import 'package:workerr_app/presentation/user/widgets/work_card2.dart';
 
-class ShowPost extends StatefulWidget {
-  ShowPost({Key? key}) : super(key: key);
+class MyWorks extends StatefulWidget {
+  MyWorks({Key? key}) : super(key: key);
 
   @override
-  State<ShowPost> createState() => _ShowPostState();
+  State<MyWorks> createState() => _MyWorksState();
 }
 
-class _ShowPostState extends State<ShowPost> {
+class _MyWorksState extends State<MyWorks> {
   FirebaseFirestore firebase = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser!;
 
@@ -38,7 +38,7 @@ class _ShowPostState extends State<ShowPost> {
             //     },
             //     icon: Icon(Icons.keyboard_option_key)),
             title: const Text(
-              'My posts',
+              'My Works',
               style: TextStyle(
                   color: kc60, fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -66,10 +66,9 @@ class _ShowPostState extends State<ShowPost> {
         ),
         body: StreamBuilder<QuerySnapshot>(
           stream: firebase
-              .collection("Posts")
-              .where("uid", isEqualTo: user.uid)
+              .collection("Works")
+              .where("wid", isEqualTo: user.uid)
               // .where('status', isNotEqualTo: 'Completed')
-              // .where('status', isNotEqualTo: 'Failed')
               .snapshots(),
           // .where({"status", "is", "Requested"}).snapshots(),
           builder:
@@ -90,14 +89,16 @@ class _ShowPostState extends State<ShowPost> {
                         itemBuilder: (BuildContext context, int index) {
                           DocumentSnapshot document =
                               snapshot.data!.docs[index];
+
+                          // .map((document) => document.data()['toName'].toString())
+                          // .toList();
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 8),
                             child: Slidable(
                               closeOnScroll: true,
                               endActionPane: ActionPane(
-                                  // dismissible: ,
-                                  extentRatio: .75,
+                                  extentRatio: .3,
                                   motion: const StretchMotion(),
                                   children: [
                                     SlidableAction(
@@ -111,72 +112,29 @@ class _ShowPostState extends State<ShowPost> {
                                       label: 'delete',
                                     ),
                                   ]),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: kc602,
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ExpansionTile(
-                                      initiallyExpanded: true,
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            document['work'],
-                                            style: const TextStyle(
-                                                color: kc30,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            '${document['like']} Likes',
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                      subtitle: Text(
-                                        document['date'],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 5),
-                                          child: Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              document['details'],
-                                              textAlign: TextAlign.left,
-                                              style: const TextStyle(
-                                                  color: kc30,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                        document['imageUrl'] != ''
-                                            ? Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: SizedBox(
-                                                    width: double.infinity,
-                                                    height: 200,
-                                                    child: Image.network(
-                                                      document['imageUrl'],
-                                                      fit: BoxFit.cover,
-                                                    )),
-                                              )
-                                            : Container(),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              startActionPane: ActionPane(
+                                extentRatio: .3,
+                                motion: const StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    autoClose: true,
+                                    borderRadius: BorderRadius.circular(15),
+                                    onPressed: (context) =>
+                                        _onDone(document.id),
+                                    backgroundColor: Colors.green,
+                                    icon: Icons.done_all,
+                                    label: 'Done',
+                                  ),
+                                ],
+                              ),
+                              child: WorkCard2(
+                                isClient: false,
+                                index: index,
+                                myDoc: document,
+                                // id: document.id,
+                                // date: document['date'],
+                                // work: document['work'],
+                                // details: document['details'],
                               ),
                             ),
                           );
@@ -208,7 +166,11 @@ class _ShowPostState extends State<ShowPost> {
     );
   }
 
+  void _onDone(String id) {
+    firebase.collection('Works').doc(id).update({'status': 'Done'});
+  }
+
   void _onDismissed(String id) {
-    firebase.collection('Posts').doc(id).delete();
+    firebase.collection('Works').doc(id).delete();
   }
 }

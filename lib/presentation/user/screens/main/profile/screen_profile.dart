@@ -233,6 +233,9 @@ class _ScreenProfileState extends State<ScreenProfile> {
                                           MaterialPageRoute(
                                               builder: (ctx) =>
                                                   ScreenSpacifyWork(
+                                                    district:
+                                                        document['district'],
+                                                    pincode: document['pin'],
                                                     name: document['name'],
                                                   )))
                                       : showDone(

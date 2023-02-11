@@ -10,7 +10,14 @@ import 'package:workerr_app/presentation/user/widgets/my_text_form.dart';
 
 class UpdateWork extends StatefulWidget {
   String name;
-  UpdateWork({Key? key, required this.name}) : super(key: key);
+  String pincode;
+  String district;
+  UpdateWork(
+      {Key? key,
+      required this.district,
+      required this.pincode,
+      required this.name})
+      : super(key: key);
 
   @override
   State<UpdateWork> createState() => _UpdateWorkState();
@@ -30,7 +37,6 @@ class _UpdateWorkState extends State<UpdateWork> {
   List<String> works = [
     'Plumbing',
     'Painting',
-    'Gypsum works',
     'Fabrication works',
     'Electric repairs',
     'Mechanic',
@@ -229,6 +235,8 @@ class _UpdateWorkState extends State<UpdateWork> {
                     // .where("field", "==", certainValue)
 
                     storeUser.collection("Workers").doc(user.uid).set({
+                      'pin': widget.pincode,
+                      'district': widget.district,
                       'uid': user.uid,
                       'job': selectedItem,
                       'details': kdet.text,

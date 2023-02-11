@@ -81,6 +81,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
               DocumentSnapshot document = snapshot.data!.docs[0];
               return snapshot.data!.docs.isNotEmpty
                   ? SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       child: Container(
                         padding: EdgeInsets.all(20),
                         child: Column(

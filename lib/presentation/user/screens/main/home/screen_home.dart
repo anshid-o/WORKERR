@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/nav_drawer.dart';
@@ -79,12 +80,8 @@ class _ScreenHomeState extends State<ScreenHome> {
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return const Center(
-                  child: CircularProgressIndicator(
-                    value: 60,
-                    backgroundColor: kc60,
-                  ),
-                );
+                return Center(
+                    child: Lottie.asset('assets/lottie/not-found.json'));
               default:
                 return snapshot.data!.docs.isNotEmpty
                     ? ListView.builder(
@@ -102,15 +99,10 @@ class _ScreenHomeState extends State<ScreenHome> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   PostCard(
+                                    index: index,
                                     isHome: true,
                                     size: size,
-                                    id: document.id,
-                                    like: document['like'],
-                                    date: document['date'],
-                                    details: document['details'],
-                                    uid: document['uid'],
-                                    work: document['work'],
-                                    url: document['imageUrl'],
+                                    myDoc: document,
                                   ),
                                 ],
                               ),
@@ -127,7 +119,7 @@ class _ScreenHomeState extends State<ScreenHome> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'You are not posted any works yet.',
+                              'No one posted any works yet.',
                               style: TextStyle(
                                   fontSize: 30,
                                   color: kc30,

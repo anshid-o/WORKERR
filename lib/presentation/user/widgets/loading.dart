@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:lottie/lottie.dart';
 import 'package:workerr_app/core/colors.dart';
 
 class Loading extends StatelessWidget {
@@ -7,14 +8,11 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Container(
       color: kc10,
-      child: const Center(
-        child: SpinKitRotatingPlain(
-          color: kc30,
-          size: 100,
-        ),
-      ),
+      child: Lottie.asset('assets/lottie/paperplane.json',
+          height: size.height * .5),
     );
   }
 }

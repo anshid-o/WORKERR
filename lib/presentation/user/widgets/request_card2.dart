@@ -10,23 +10,12 @@ import 'package:workerr_app/presentation/user/screens/main/chat/chat_screen_chil
 import 'package:workerr_app/presentation/user/screens/main/chat/widgets/chat_screen2.dart';
 
 class RequestCard2 extends StatefulWidget {
-  String from;
-  String id;
-  String status;
-  String date;
-  String work;
-  String det;
-  String uid;
-  RequestCard2(
-      {Key? key,
-      required this.status,
-      required this.id,
-      required this.work,
-      required this.date,
-      required this.det,
-      required this.from,
-      required this.uid})
-      : super(key: key);
+  DocumentSnapshot myDoc;
+
+  RequestCard2({
+    Key? key,
+    required this.myDoc,
+  }) : super(key: key);
 
   @override
   State<RequestCard2> createState() => _RequestCard2State();
@@ -44,7 +33,7 @@ class _RequestCard2State extends State<RequestCard2> {
     return StreamBuilder<QuerySnapshot>(
       stream: storeUser
           .collection("Users")
-          .where("uid", isEqualTo: widget.from)
+          .where("uid", isEqualTo: widget.myDoc['from'])
           .snapshots(),
       // .where({"status", "is", "Requested"}).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -106,7 +95,7 @@ class _RequestCard2State extends State<RequestCard2> {
                             ),
                           ),
                           title: Text(
-                            widget.work,
+                            widget.myDoc['job'],
                             style: const TextStyle(
                                 fontSize: 23,
                                 fontWeight: FontWeight.bold,
@@ -114,7 +103,7 @@ class _RequestCard2State extends State<RequestCard2> {
                                 letterSpacing: 1),
                           ),
                           subtitle: Text(
-                            widget.date,
+                            widget.myDoc['date'],
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -126,7 +115,7 @@ class _RequestCard2State extends State<RequestCard2> {
                             Padding(
                               padding: const EdgeInsets.all(9.0),
                               child: Text(
-                                widget.det,
+                                widget.myDoc['details'],
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                     color: kc302,
@@ -156,7 +145,7 @@ class _RequestCard2State extends State<RequestCard2> {
                               ),
                             ),
                             kheight,
-                            if (widget.status == 'Requested')
+                            if (widget.myDoc['status'] == 'Requested')
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -196,7 +185,7 @@ class _RequestCard2State extends State<RequestCard2> {
                                                       storeUser
                                                           .collection(
                                                               "Requests")
-                                                          .doc(widget.id)
+                                                          .doc(widget.myDoc.id)
                                                           .update({
                                                         'status': 'Accepted',
                                                       });
@@ -262,7 +251,7 @@ class _RequestCard2State extends State<RequestCard2> {
                                                       storeUser
                                                           .collection(
                                                               "Requests")
-                                                          .doc(widget.id)
+                                                          .doc(widget.myDoc.id)
                                                           .update({
                                                         'status': 'Rejected',
                                                       });
@@ -297,7 +286,7 @@ class _RequestCard2State extends State<RequestCard2> {
                                       label: const Text('Reject')),
                                 ],
                               )
-                            else if (widget.status == 'Accepted')
+                            else if (widget.myDoc['status'] == 'Accepted')
                               const Text(
                                 'Accepted',
                                 style: TextStyle(

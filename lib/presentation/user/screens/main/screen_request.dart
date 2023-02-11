@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 
@@ -17,6 +18,7 @@ class ScreenRequest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         backgroundColor: kc30,
@@ -76,32 +78,37 @@ class ScreenRequest extends StatelessWidget {
                           DocumentSnapshot document =
                               snapshot.data!.docs[index];
                           return RequestCard2(
-                              id: document.id,
-                              status: document['status'],
-                              date: document['date'],
-                              work: document['job'],
-                              det: document['details'],
-                              from: document['from'],
-                              uid: document['to']);
+                            myDoc: document,
+                          );
                         },
                         itemCount: snapshot.data!.docs.length,
                       )
                     : Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: kc60,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'There are doesn\'t found any requests.',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  color: kc30,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Lottie.asset('assets/lottie/not-found.json'),
+                              Container(
+                                height: size.height * .15,
+                                decoration: BoxDecoration(
+                                    color: kc60,
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Text(
+                                      'No requests found in your inbox, yet !',
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          color: kc30,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );

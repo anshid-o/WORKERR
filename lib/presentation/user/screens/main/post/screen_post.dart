@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:io' as i;
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
@@ -29,10 +30,10 @@ class _ScreenPostState extends State<ScreenPost> {
   TextEditingController pdet = TextEditingController();
   XFile? file;
   String imageUrl = '';
+
   List<String> works = [
     'Plumbing',
     'Painting',
-    'Gypsum Work',
     'Fabrication works',
     'Electric repairs',
     'Mechanic',
@@ -101,24 +102,24 @@ class _ScreenPostState extends State<ScreenPost> {
               SingleChildScrollView(
                 child: Column(
                   children: [
-                    kheight,
-                    const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.transparent,
-                      child: Icon(
-                        CupertinoIcons.mail,
-                        color: kc60,
-                        shadows: kshadow2,
-                        size: 70,
-                      ),
+                    Lottie.asset(
+                      'assets/lottie/businessman.json',
+                      height: size.height * .25,
                     ),
-                    const Divider(
-                      thickness: 0,
-                      height: 0,
-                    ),
+                    // const CircleAvatar(
+                    //   radius: 50,
+                    //   backgroundColor: Colors.transparent,
+                    //   child: Icon(
+                    //     CupertinoIcons.mail,
+                    //     color: kc60,
+                    //     shadows: kshadow2,
+                    //     size: 70,
+                    //   ),
+                    // ),
+
                     Container(
                       width: 360,
-                      height: 350,
+                      // height: 350,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(23),
                           gradient: const SweepGradient(
@@ -159,6 +160,7 @@ class _ScreenPostState extends State<ScreenPost> {
                             ),
                             kheight30,
                             kheight,
+
                             Row(
                               children: [
                                 const Text(
@@ -169,7 +171,7 @@ class _ScreenPostState extends State<ScreenPost> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Container(
-                                  width: 190,
+                                  width: size.width * .5,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       color: const Color.fromARGB(
@@ -277,6 +279,7 @@ class _ScreenPostState extends State<ScreenPost> {
                                   'date': formatter,
                                   'time': now
                                 });
+                                wdet.text = '';
 
                                 Navigator.push(
                                     context,
@@ -352,20 +355,9 @@ class _ScreenPostState extends State<ScreenPost> {
               SingleChildScrollView(
                 child: Column(
                   children: [
-                    kheight,
-                    const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.transparent,
-                      child: Icon(
-                        CupertinoIcons.sparkles,
-                        color: kc60,
-                        shadows: kshadow2,
-                        size: 70,
-                      ),
-                    ),
-                    const Divider(
-                      thickness: 0,
-                      height: 0,
+                    Lottie.asset(
+                      'assets/lottie/businessman.json',
+                      height: size.height * .25,
                     ),
                     Container(
                       width: 360,

@@ -1,4 +1,5 @@
 // import 'package:flutter/cupertino.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,10 @@ class ScreenFeedback extends StatefulWidget {
 }
 
 class _ScreenFeedbackState extends State<ScreenFeedback> {
+  int _selectedEmoji = 0;
   TextEditingController wdet = TextEditingController();
   final storeUser = FirebaseFirestore.instance;
-  int selected = 0;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -28,7 +30,7 @@ class _ScreenFeedbackState extends State<ScreenFeedback> {
           actions: [
             TextButton(
               onPressed: () {
-                if (selected != 0) {
+                if (_selectedEmoji != 0) {
                   try {
                     final user = FirebaseAuth.instance.currentUser;
                     if (user != null) {
@@ -37,7 +39,7 @@ class _ScreenFeedbackState extends State<ScreenFeedback> {
                       String formatter = DateFormat('yMd').format(now);
                       storeUser.collection("Feedback").doc().set({
                         'uid': user.uid,
-                        'state': selected,
+                        'state': _selectedEmoji,
                         'date': formatter,
                         'feedback': wdet.text
                       });
@@ -104,197 +106,148 @@ class _ScreenFeedbackState extends State<ScreenFeedback> {
               //   },
               // )
               kheight,
-              const Text(
-                'What do you think of our App?',
-                style: TextStyle(color: kc60, fontSize: 20),
-              ),
-              kheight,
-              Divider(
-                indent: size.width * .05,
-                endIndent: size.width * .05,
-              ),
+              // const Text(
+              //   'What do you think of our App?',
+              //   style: TextStyle(color: kc60, fontSize: 20),
+              // ),
+
               Container(
-                decoration: BoxDecoration(
-                    color: kc602, borderRadius: BorderRadius.circular(15)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (selected == 1) {
-                                setState(() {
-                                  selected = 0;
-                                });
-                              } else {
-                                setState(() {
-                                  selected = 1;
-                                });
-                              }
-                            },
-                            child: CircleAvatar(
-                                radius: selected == 1
-                                    ? size.width * .115
-                                    : size.width * .08,
-                                backgroundImage: const AssetImage(
-                                    'assets/emoji/verybad.jpg')),
-                          ),
-                          Text(
-                            'Very bad',
-                            style: TextStyle(
-                                color: selected == 1
-                                    ? const Color.fromARGB(255, 158, 13, 3)
-                                    : Colors.grey,
-                                fontWeight: selected == 1
-                                    ? FontWeight.bold
-                                    : FontWeight.w400,
-                                fontSize: selected == 1 ? 18 : 15),
-                          )
-                        ],
+                      const Text("How was your experience?",
+                          style: TextStyle(fontSize: 24.0)),
+                      const SizedBox(
+                        height: 32.0,
                       ),
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (selected == 2) {
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  selected = 0;
+                                  _selectedEmoji = 1;
                                 });
-                              } else {
+                              },
+                              child: Container(
+                                height: _selectedEmoji == 1 ? 75.0 : 60,
+                                width: _selectedEmoji == 1 ? 75.0 : 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: _selectedEmoji == 1
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: const Center(
+                                  child: Text(
+                                    "😡",
+                                    style: TextStyle(fontSize: 40.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  selected = 2;
+                                  _selectedEmoji = 2;
                                 });
-                              }
-                            },
-                            child: CircleAvatar(
-                                radius: selected == 2
-                                    ? size.width * .115
-                                    : size.width * .08,
-                                backgroundImage:
-                                    const AssetImage('assets/emoji/poor.jpg')),
-                          ),
-                          Text(
-                            'Poor',
-                            style: TextStyle(
-                                color: selected == 2
-                                    ? const Color.fromARGB(255, 255, 76, 63)
-                                    : Colors.grey,
-                                fontWeight: selected == 2
-                                    ? FontWeight.bold
-                                    : FontWeight.w400,
-                                fontSize: selected == 2 ? 18 : 15),
-                          )
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (selected == 3) {
+                              },
+                              child: Container(
+                                height: _selectedEmoji == 2 ? 75.0 : 60,
+                                width: _selectedEmoji == 2 ? 75.0 : 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: _selectedEmoji == 2
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: const Center(
+                                  child: Text(
+                                    "😞",
+                                    style: TextStyle(fontSize: 40.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  selected = 0;
+                                  _selectedEmoji = 3;
                                 });
-                              } else {
+                              },
+                              child: Container(
+                                height: _selectedEmoji == 3 ? 75.0 : 60,
+                                width: _selectedEmoji == 3 ? 75.0 : 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: _selectedEmoji == 3
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: const Center(
+                                  child: Text(
+                                    "😐",
+                                    style: TextStyle(fontSize: 40.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  selected = 3;
+                                  _selectedEmoji = 4;
                                 });
-                              }
-                            },
-                            child: CircleAvatar(
-                                radius: selected == 3
-                                    ? size.width * .115
-                                    : size.width * .08,
-                                backgroundImage: const AssetImage(
-                                    'assets/emoji/medium.jpg')),
-                          ),
-                          Text(
-                            'Medium',
-                            style: TextStyle(
-                                color: selected == 3
-                                    ? const Color.fromARGB(255, 218, 165, 22)
-                                    : Colors.grey,
-                                fontWeight: selected == 3
-                                    ? FontWeight.bold
-                                    : FontWeight.w400,
-                                fontSize: selected == 3 ? 18 : 15),
-                          )
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (selected == 4) {
+                              },
+                              child: Container(
+                                height: _selectedEmoji == 4 ? 75.0 : 60,
+                                width: _selectedEmoji == 4 ? 75.0 : 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: _selectedEmoji == 4
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: const Center(
+                                  child: Text(
+                                    "🙂",
+                                    style: TextStyle(fontSize: 40.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  selected = 0;
+                                  _selectedEmoji = 5;
                                 });
-                              } else {
-                                setState(() {
-                                  selected = 4;
-                                });
-                              }
-                            },
-                            child: CircleAvatar(
-                                radius: selected == 4
-                                    ? size.width * .115
-                                    : size.width * .08,
-                                backgroundImage:
-                                    const AssetImage('assets/emoji/good.jpg')),
-                          ),
-                          Text(
-                            'Good',
-                            style: TextStyle(
-                                color: selected == 4
-                                    ? const Color.fromARGB(255, 100, 185, 97)
-                                    : Colors.grey,
-                                fontWeight: selected == 4
-                                    ? FontWeight.bold
-                                    : FontWeight.w400,
-                                fontSize: selected == 4 ? 18 : 15),
-                          )
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (selected == 5) {
-                                setState(() {
-                                  selected = 0;
-                                });
-                              } else {
-                                setState(() {
-                                  selected = 5;
-                                });
-                              }
-                            },
-                            child: CircleAvatar(
-                                radius: selected == 5
-                                    ? size.width * .115
-                                    : size.width * .08,
-                                backgroundImage: const AssetImage(
-                                    'assets/emoji/excellent.jpg')),
-                          ),
-                          Text(
-                            'Excellent',
-                            style: TextStyle(
-                                color: selected == 5
-                                    ? const Color.fromARGB(255, 9, 87, 3)
-                                    : Colors.grey,
-                                fontWeight: selected == 5
-                                    ? FontWeight.bold
-                                    : FontWeight.w400,
-                                fontSize: selected == 5 ? 18 : 15),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                              },
+                              child: Container(
+                                height: _selectedEmoji == 5 ? 75.0 : 60,
+                                width: _selectedEmoji == 5 ? 75.0 : 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: _selectedEmoji == 5
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                child: const Center(
+                                  child: Text(
+                                    "😄",
+                                    style: TextStyle(fontSize: 40.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ]),
               ),
+
               kheight30,
               const Text(
                 'What would you like to share with us?',

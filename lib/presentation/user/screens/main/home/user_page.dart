@@ -16,7 +16,7 @@ class UserPage extends StatelessWidget {
         backgroundColor: Colors.black,
         title: Text(name),
       ),
-      body: Center(child: Image(image: img)),
+      body: Center(child: Hero(tag: 'user_image', child: Image(image: img))),
     );
   }
 }

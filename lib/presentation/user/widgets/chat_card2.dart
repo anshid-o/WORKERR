@@ -8,6 +8,7 @@ import 'package:workerr_app/core/constants.dart';
 // import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/chat/chat_screen_child.dart';
 import 'package:workerr_app/presentation/user/screens/main/chat/widgets/chat_screen2.dart';
+import 'package:workerr_app/presentation/user/widgets/user_details.dart';
 
 class ChatCard2 extends StatelessWidget {
   String uid;
@@ -61,11 +62,22 @@ class ChatCard2 extends StatelessWidget {
                               color: kc30,
                             ),
                           ),
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: kc30,
-                            backgroundImage: image,
-                          ),
+                          leading: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UserDetails(
+                                        name: document['name'],
+                                        img: image,
+                                        index: index,
+                                      ),
+                                    ));
+                              },
+                              child: Hero(
+                                  tag: 'image_chat$index',
+                                  child: biuldImage(image))),
+
                           subtitle: Text(
                             '${(index + 4) * 2}/${index + 1}/2021',
                             style: const TextStyle(
@@ -135,6 +147,14 @@ class ChatCard2 extends StatelessWidget {
                   );
         }
       },
+    );
+  }
+
+  biuldImage(ImageProvider img) {
+    return CircleAvatar(
+      radius: 30,
+      backgroundColor: kc30,
+      backgroundImage: img,
     );
   }
 }

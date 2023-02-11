@@ -9,7 +9,14 @@ import 'package:workerr_app/presentation/user/screens/main/profile/update_work.d
 
 class ScreenSpacifyWork extends StatelessWidget {
   String name;
-  ScreenSpacifyWork({Key? key, required this.name}) : super(key: key);
+  String pincode;
+  String district;
+  ScreenSpacifyWork(
+      {Key? key,
+      required this.district,
+      required this.pincode,
+      required this.name})
+      : super(key: key);
   FirebaseFirestore firebase = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser!;
 
@@ -196,6 +203,8 @@ class ScreenSpacifyWork extends StatelessWidget {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         UpdateWork(
+                                                          district: district,
+                                                          pincode: pincode,
                                                           name: name,
                                                         )));
                                           },
@@ -268,6 +277,8 @@ class ScreenSpacifyWork extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => UpdateWork(
+                                            district: district,
+                                            pincode: pincode,
                                             name: name,
                                           )));
                             },

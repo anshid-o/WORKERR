@@ -10,26 +10,24 @@ import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dart';
 
 class BuildList extends StatelessWidget {
-  String uid;
+  DocumentSnapshot myDoc;
+  // String uid;
   double rating;
-  String name;
+  // String name;
   String work;
   String id;
-  int count;
-  String exp;
+  // int count;
+  // String exp;
   String det;
   // String pin;
   bool isdec;
   BuildList(
       {Key? key,
+      required this.myDoc,
       required this.rating,
-      required this.count,
-      required this.name,
       required this.id,
       required this.det,
       required this.isdec,
-      required this.exp,
-      required this.uid,
       required this.work})
       : super(key: key);
 
@@ -45,19 +43,16 @@ class BuildList extends StatelessWidget {
     //       isDescending ? item2.compareTo(item1) : item1.compareTo(item2));
     // final item = sortedItems[index];
     return StreamBuilder<QuerySnapshot>(
-      stream:
-          firebase.collection("Users").where("uid", isEqualTo: uid).snapshots(),
+      stream: firebase
+          .collection("Users")
+          .where("uid", isEqualTo: myDoc['uid'])
+          .snapshots(),
       // .where({"status", "is", "Requested"}).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return const Center(
-              child: CircularProgressIndicator(
-                value: 60,
-                backgroundColor: kc60,
-              ),
-            );
+            return const Center();
           default:
             DocumentSnapshot document = snapshot.data!.docs[0];
             ImageProvider image = document['imageUrl'] == ''
@@ -97,10 +92,12 @@ class BuildList extends StatelessWidget {
                         title: Row(
                           children: [
                             Text(document['name']),
-                            kwidth20,
+                            const Spacer(),
+                            Text('⭐ $rating'),
                           ],
                         ),
-                        subtitle: Text('${exp} years of Experience'),
+                        subtitle:
+                            Text('${myDoc['experience']} years of Experience'),
                         trailing: IconButton(
                           splashColor: kc10,
                           tooltip: 'Send Request',
@@ -117,10 +114,10 @@ class BuildList extends StatelessWidget {
                               storeUser.collection("Requests").doc().set({
                                 'from': user.uid,
                                 'job': work,
-                                'to': uid,
+                                'to': myDoc['uid'],
                                 'rating': rating,
-                                'count': count,
-                                'toName': name,
+                                'count': myDoc['count'],
+                                'toName': myDoc['name'],
                                 'id': id,
                                 'details': det,
                                 'status': 'Requested',

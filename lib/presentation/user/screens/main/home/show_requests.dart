@@ -69,7 +69,8 @@ class _ShowRequestState extends State<ShowRequest> {
               .collection("Works")
               .where("uid", isEqualTo: user.uid)
               // .where('status', isNotEqualTo: 'Completed')
-              .where('status', whereNotIn: ['Failed', 'Done']).snapshots(),
+              .where('status',
+                  whereNotIn: ['Failed', 'Done', 'Completed']).snapshots(),
           // .where({"status", "is", "Requested"}).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -126,10 +127,7 @@ class _ShowRequestState extends State<ShowRequest> {
                               ),
                               child: WorkCard2(
                                 index: index,
-                                id: document.id,
-                                date: document['date'],
-                                work: document['work'],
-                                details: document['details'],
+                                myDoc: document,
                               ),
                             ),
                           );

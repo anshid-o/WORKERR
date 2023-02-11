@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
+import 'package:workerr_app/presentation/user/screens/main/home/my_works.dart';
 // import 'package:workerr_app/presentation/user/screens/main/home/screen_home.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/show_post.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/show_requests.dart';
@@ -19,6 +21,7 @@ class MyNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return StreamBuilder<QuerySnapshot>(
       stream: firebase
           .collection("Users")
@@ -29,12 +32,7 @@ class MyNavigationDrawer extends StatelessWidget {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return const Center(
-              child: CircularProgressIndicator(
-                value: 60,
-                backgroundColor: kc60,
-              ),
-            );
+            return const Center();
           default:
             DocumentSnapshot document = snapshot.data!.docs[0];
             String name = document['name'];
@@ -52,7 +50,7 @@ class MyNavigationDrawer extends StatelessWidget {
                             child: InkWell(
                               splashColor: kc30,
                               onTap: () {
-                                Navigator.pop(context);
+                                // Navigator.pop(context);
                                 for (int i = 0; i < 1000; i++) {}
                                 Navigator.push(
                                     context,
@@ -76,15 +74,11 @@ class MyNavigationDrawer extends StatelessWidget {
                                       child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(100),
-                                          child: document['imageUrl'] == ''
-                                              ? Image.asset(
-                                                  'assets/persons/default.jpg',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Image.network(
-                                                  document['imageUrl'],
-                                                  fit: BoxFit.cover,
-                                                )),
+                                          child: Hero(
+                                            tag: 'user_image',
+                                            child: buildImages(
+                                                document['imageUrl']),
+                                          )),
                                     ),
                                     Text(
                                         name[0].toUpperCase() +
@@ -111,7 +105,7 @@ class MyNavigationDrawer extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(24),
                             child: Wrap(
-                              runSpacing: 16,
+                              runSpacing: 5,
                               children: [
                                 // const Divider(
                                 //   color: Colors.grey,
@@ -174,7 +168,15 @@ class MyNavigationDrawer extends StatelessWidget {
                                     CupertinoIcons.time_solid,
                                     size: 30,
                                   ),
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MyWorks(),
+                                      ),
+                                    );
+                                  },
                                   title: const Text(
                                     'My works',
                                     style: TextStyle(
@@ -210,6 +212,10 @@ class MyNavigationDrawer extends StatelessWidget {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
+                                Lottie.asset(
+                                  'assets/lottie/e-mail-worldwide-delivery.json',
+                                  height: size.height * .2,
+                                ),
                               ],
                             ),
                           ),
@@ -244,5 +250,17 @@ class MyNavigationDrawer extends StatelessWidget {
         }
       },
     );
+  }
+
+  buildImages(String url) {
+    return url == ''
+        ? Image.asset(
+            'assets/persons/default.jpg',
+            fit: BoxFit.cover,
+          )
+        : Image.network(
+            url,
+            fit: BoxFit.cover,
+          );
   }
 }

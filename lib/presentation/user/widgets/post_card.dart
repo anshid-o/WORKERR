@@ -1,29 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dart';
+import 'package:workerr_app/presentation/user/widgets/user_details.dart';
 
 class PostCard extends StatefulWidget {
-  String date;
-  String id;
-  String url;
-  int like;
+  // String date;
+  // String id;
+  // String url;
+  // int like;
+  int index;
+  DocumentSnapshot myDoc;
   bool isHome;
-  String work;
-  String uid;
-  String details;
+  // String work;
+  // String uid;
+  // String details;
   PostCard(
       {super.key,
-      this.id = '',
-      this.like = 0,
+      // this.id = '',
+      // this.like = 0,
+      required this.index,
       this.isHome = false,
       required this.size,
-      required this.date,
-      required this.details,
-      required this.uid,
-      required this.work,
-      required this.url});
+      required this.myDoc
+      // required this.date,
+      // required this.details,
+      // required this.uid,
+      // required this.work,
+      // required this.url
+
+      });
 
   final Size size;
 
@@ -35,13 +43,40 @@ class _PostCardState extends State<PostCard> {
   final storeUser = FirebaseFirestore.instance;
 
   bool isPressed = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    final user = FirebaseAuth.instance.currentUser;
+    final documentReference = FirebaseFirestore.instance
+        .collection("Likes")
+        .doc('${user!.uid}${widget.myDoc.id}');
+
+    documentReference.get().then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        // The document exists
+        final data = documentSnapshot.data();
+
+        // You can now access the values stored in the document
+        if (data!['liked'] == true) {
+          setState(() {
+            isPressed = true;
+          });
+        } else {
+          setState(() {
+            isPressed = false;
+          });
+        }
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: storeUser
           .collection("Users")
-          .where('uid', isEqualTo: widget.uid)
+          .where('uid', isEqualTo: widget.myDoc['uid'])
           .snapshots(),
       // .where({"status", "is", "Requested"}).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -56,11 +91,22 @@ class _PostCardState extends State<PostCard> {
                 : NetworkImage(document['imageUrl']) as ImageProvider;
             return snapshot.data!.docs.isNotEmpty
                 ? ExpansionTile(
-                    leading: CircleAvatar(
-                      radius: widget.size.width * .08,
-                      backgroundColor: kc30,
-                      backgroundImage: image,
-                    ),
+                    leading: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserDetails(
+                                  page: 'post',
+                                  name: document['name'],
+                                  img: image,
+                                  index: widget.index,
+                                ),
+                              ));
+                        },
+                        child: Hero(
+                            tag: 'image_post${widget.index}',
+                            child: biuldImage(image))),
                     initiallyExpanded: true,
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,38 +119,105 @@ class _PostCardState extends State<PostCard> {
                               fontWeight: FontWeight.bold),
                         ),
                         if (widget.isHome)
-                          IconButton(
-                              onPressed: () {
-                                firebase
-                                    .collection('Posts')
-                                    .doc(widget.id)
-                                    .update({'like': widget.like + 1});
-                                setState(() {
-                                  isPressed = !isPressed;
-                                });
-                                isPressed
-                                    ? firebase
-                                        .collection('Posts')
-                                        .doc(widget.id)
-                                        .update({'like': widget.like + 1})
-                                    : firebase
-                                        .collection('Posts')
-                                        .doc(widget.id)
-                                        .update({'like': widget.like - 1});
-                              },
-                              icon: isPressed
-                                  ? const Icon(
-                                      CupertinoIcons.heart_fill,
-                                      color: Colors.red,
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+                                  final documentReference = FirebaseFirestore
+                                      .instance
+                                      .collection("Likes")
+                                      .doc('${user!.uid}${widget.myDoc.id}');
+
+                                  documentReference
+                                      .get()
+                                      .then((documentSnapshot) {
+                                    if (documentSnapshot.exists) {
+                                      // The document exists
+                                      final data = documentSnapshot.data();
+
+                                      // You can now access the values stored in the document
+                                      if (data!['liked'] == true) {
+                                        (firebase
+                                            .collection('Likes')
+                                            .doc(
+                                                '${user.uid}${widget.myDoc.id}')
+                                            .update({'liked': false}));
+                                        setState(() {
+                                          isPressed = false;
+                                        });
+                                        firebase
+                                            .collection('Posts')
+                                            .doc(widget.myDoc.id)
+                                            .update({
+                                          'like': FieldValue.increment(-1)
+                                        });
+                                      } else {
+                                        firebase
+                                            .collection('Likes')
+                                            .doc(
+                                                '${user.uid}${widget.myDoc.id}')
+                                            .update({'liked': true});
+                                        setState(() {
+                                          isPressed = true;
+                                        });
+                                        firebase
+                                            .collection('Posts')
+                                            .doc(widget.myDoc.id)
+                                            .update({
+                                          'like': FieldValue.increment(1)
+                                        });
+                                      }
+                                    } else {
+                                      firebase
+                                          .collection("Likes")
+                                          .doc('${user.uid}${widget.myDoc.id}')
+                                          .set({
+                                        'liked': true,
+                                        'id': widget.myDoc.id
+                                      });
+                                      setState(() {
+                                        isPressed = true;
+                                      });
+                                      firebase
+                                          .collection('Posts')
+                                          .doc(widget.myDoc.id)
+                                          .update({
+                                        'like': FieldValue.increment(1)
+                                      });
+                                    }
+                                  });
+                                },
+                                icon: isPressed
+                                    ? const Icon(
+                                        CupertinoIcons.heart_fill,
+                                        color: Colors.red,
+                                      )
+                                    : const Icon(
+                                        CupertinoIcons.heart,
+                                        color: Colors.grey,
+                                      ),
+                              ),
+                              isPressed
+                                  ? Text(
+                                      '${widget.myDoc['like']}',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold),
                                     )
-                                  : const Icon(
-                                      CupertinoIcons.heart,
-                                      color: Colors.grey,
-                                    ))
+                                  : Text(
+                                      '${widget.myDoc['like']}',
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                            ],
+                          ),
                       ],
                     ),
                     subtitle: Text(
-                      widget.work,
+                      widget.myDoc['work'],
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     children: [
@@ -114,7 +227,7 @@ class _PostCardState extends State<PostCard> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Text(
-                            widget.details,
+                            widget.myDoc['details'],
                             textAlign: TextAlign.left,
                             style: const TextStyle(
                                 color: kc30,
@@ -123,14 +236,14 @@ class _PostCardState extends State<PostCard> {
                           ),
                         ),
                       ),
-                      widget.url != ''
+                      widget.myDoc['imageUrl'] != ''
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SizedBox(
                                   width: double.infinity,
                                   height: 200,
                                   child: Image.network(
-                                    widget.url,
+                                    widget.myDoc['imageUrl'],
                                     fit: BoxFit.cover,
                                   )),
                             )
@@ -141,7 +254,7 @@ class _PostCardState extends State<PostCard> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Text(
-                            widget.date,
+                            widget.myDoc['date'],
                             style: TextStyle(
                                 color: kc30.withOpacity(.5),
                                 fontSize: 12,
@@ -159,7 +272,7 @@ class _PostCardState extends State<PostCard> {
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'You are not posted any works yet.',
+                          'Users not posted any works yet.',
                           style: TextStyle(
                               fontSize: 30,
                               color: kc30,
@@ -171,6 +284,14 @@ class _PostCardState extends State<PostCard> {
                   );
         }
       },
+    );
+  }
+
+  biuldImage(ImageProvider img) {
+    return CircleAvatar(
+      radius: 30,
+      backgroundColor: kc30,
+      backgroundImage: img,
     );
   }
 }
