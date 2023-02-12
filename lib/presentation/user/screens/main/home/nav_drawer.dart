@@ -10,7 +10,7 @@ import 'package:workerr_app/presentation/user/screens/main/home/my_works.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/show_post.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/show_requests.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/user_page.dart';
-import 'package:workerr_app/presentation/user/widgets/my_tabbed_appbar.dart';
+import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
 class MyNavigationDrawer extends StatelessWidget {
   MyNavigationDrawer({
@@ -69,8 +69,8 @@ class MyNavigationDrawer extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     SizedBox(
-                                      width: 120,
-                                      height: 120,
+                                      width: size.width * .4,
+                                      height: size.width * .4,
                                       child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(100),

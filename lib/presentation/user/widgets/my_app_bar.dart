@@ -4,7 +4,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
-import 'package:workerr_app/presentation/user/widgets/my_tabbed_appbar.dart';
+import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
 class MyAppBar extends StatelessWidget {
   String name;

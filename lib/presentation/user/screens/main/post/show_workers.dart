@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/build_list.dart';
+import 'package:workerr_app/presentation/user/screens/main/post/search.dart';
 
 // import 'package:workerr_app/presentation/user/widgets/my_text_form.dart';
 
@@ -107,7 +108,15 @@ class _ShowWorkersState extends State<ShowWorkers> {
           ),
           IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: CustomSeachDeligate());
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SeachPage(
+                        id: widget.id,
+                        work: widget.work,
+                      ),
+                    ));
+                // showSearch(context: context, delegate: CustomSeachDeligate());
               },
               icon: const Icon(
                 Icons.search,
@@ -2666,26 +2675,30 @@ class _ShowWorkersState extends State<ShowWorkers> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        30, 100, 30, 0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: kc602,
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'There are no workers who capable to do ${widget.work}.',
-                                          style: const TextStyle(
-                                              fontSize: 30,
-                                              color: kc30,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            30, 100, 30, 0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: kc602,
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'There are no workers who capable to do ${widget.work}.',
+                                              style: const TextStyle(
+                                                  fontSize: 30,
+                                                  color: kc30,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ],
                               );

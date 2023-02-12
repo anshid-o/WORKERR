@@ -86,6 +86,7 @@ class _WorkCard2State extends State<WorkCard2> {
   String selectedItem = 'Choose One';
 
   bool isPressed = false;
+  FirebaseFirestore firebase = FirebaseFirestore.instance;
 
   void initState() {
     // TODO: implement initState

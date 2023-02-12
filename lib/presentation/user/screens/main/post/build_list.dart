@@ -9,7 +9,7 @@ import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dart';
 
-class BuildList extends StatelessWidget {
+class BuildList extends StatefulWidget {
   DocumentSnapshot myDoc;
   // String uid;
   double rating;
@@ -31,8 +31,38 @@ class BuildList extends StatelessWidget {
       required this.work})
       : super(key: key);
 
+  @override
+  State<BuildList> createState() => _BuildListState();
+}
+
+class _BuildListState extends State<BuildList> {
+  bool pressed = false;
+
   // IconData icon = Icons.send_outlined;
+  FirebaseFirestore firebase = FirebaseFirestore.instance;
+
   final storeUser = FirebaseFirestore.instance;
+  void initState() {
+    // TODO: implement initState
+    final user = FirebaseAuth.instance.currentUser;
+    final documentReference = FirebaseFirestore.instance
+        .collection("Requests")
+        .doc('${widget.id}${widget.myDoc['uid']}');
+
+    documentReference.get().then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        setState(() {
+          pressed = true;
+        });
+      } else {
+        setState(() {
+          pressed = false;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // itemCount: workers.length,
@@ -45,7 +75,7 @@ class BuildList extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: firebase
           .collection("Users")
-          .where("uid", isEqualTo: myDoc['uid'])
+          .where("uid", isEqualTo: widget.myDoc['uid'])
           .snapshots(),
       // .where({"status", "is", "Requested"}).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -93,52 +123,63 @@ class BuildList extends StatelessWidget {
                           children: [
                             Text(document['name']),
                             const Spacer(),
-                            Text('⭐ $rating'),
+                            Text('⭐ ${widget.rating}'),
                           ],
                         ),
-                        subtitle:
-                            Text('${myDoc['experience']} years of Experience'),
-                        trailing: IconButton(
-                          splashColor: kc10,
-                          tooltip: 'Send Request',
-                          // focusColor: kred,
-                          // hoverColor: kred,
-                          onPressed: (() {
-                            final now = DateTime.now();
-                            String formatter = DateFormat('yMd').format(now);
-                            // print('user not null');
+                        subtitle: Text(
+                            '${widget.myDoc['experience']} years of Experience'),
+                        trailing: pressed
+                            ? Icon(Icons.done_rounded)
+                            : IconButton(
+                                splashColor: kc10,
+                                tooltip: 'Send Request',
+                                // focusColor: kred,
+                                // hoverColor: kred,
+                                onPressed: (() {
+                                  setState(() {
+                                    pressed = true;
+                                  });
+                                  final now = DateTime.now();
+                                  String formatter =
+                                      DateFormat('yMd').format(now);
+                                  // print('user not null');
 
-                            // .where("field", "==", certainValue)
-                            final user = FirebaseAuth.instance.currentUser;
-                            if (user != null) {
-                              storeUser.collection("Requests").doc().set({
-                                'from': user.uid,
-                                'job': work,
-                                'to': myDoc['uid'],
-                                'rating': rating,
-                                'count': myDoc['count'],
-                                'toName': myDoc['name'],
-                                'id': id,
-                                'details': det,
-                                'status': 'Requested',
-                                'date': formatter,
-                                'time': now
-                              });
-                            }
-                            // setState(() {
-                            //   icon = Icons.done;
-                            // });
-                            showDone(
-                                context,
-                                'Request sent to ${document['name']}',
-                                CupertinoIcons.envelope,
-                                Colors.green);
-                          }),
-                          icon: const Icon(
-                            Icons.send_outlined,
-                            color: kc10,
-                          ),
-                        ),
+                                  // .where("field", "==", certainValue)
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (user != null) {
+                                    storeUser
+                                        .collection("Requests")
+                                        .doc(
+                                            '${widget.id}${widget.myDoc['uid']}')
+                                        .set({
+                                      'from': user.uid,
+                                      'job': widget.work,
+                                      'to': widget.myDoc['uid'],
+                                      'rating': widget.rating,
+                                      'count': widget.myDoc['count'],
+                                      'toName': widget.myDoc['name'],
+                                      'id': widget.id,
+                                      'details': widget.det,
+                                      'status': 'Requested',
+                                      'date': formatter,
+                                      'time': now
+                                    });
+                                  }
+                                  // setState(() {
+                                  //   icon = Icons.done;
+                                  // });
+                                  showDone(
+                                      context,
+                                      'Request sent to ${document['name']}',
+                                      CupertinoIcons.envelope,
+                                      Colors.green);
+                                }),
+                                icon: const Icon(
+                                  Icons.send_outlined,
+                                  color: kc10,
+                                ),
+                              ),
                         children: [
                           Text(
                             document['pin'],
@@ -151,7 +192,7 @@ class BuildList extends StatelessWidget {
                           ),
                           kheight,
                           Text(
-                            det,
+                            widget.det,
                             style: const TextStyle(color: kblue3),
                           ),
                         ],

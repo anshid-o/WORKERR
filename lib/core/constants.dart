@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
 
@@ -229,3 +231,13 @@ Future<dynamic> myRemiderMessage(BuildContext context) {
     },
   );
 }
+
+// FirebaseFirestore firebase = FirebaseFirestore.instance;
+// bool checkDoc(String collection, String id) async {
+//   var a = await firebase.collection(collection).doc(id).get();
+//   if (a.exists) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }

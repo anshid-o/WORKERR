@@ -10,7 +10,7 @@ import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dar
 // import 'package:workerr_app/presentation/user/widgets/chat_card.dart';
 import 'package:workerr_app/presentation/user/widgets/chat_card2.dart';
 // import 'package:workerr_app/presentation/user/widgets/my_app_bar.dart';
-import 'package:workerr_app/presentation/user/widgets/my_tabbed_appbar.dart';
+import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
 class ScreenChat extends StatelessWidget {
   ScreenChat({Key? key}) : super(key: key);

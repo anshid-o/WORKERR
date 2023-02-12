@@ -16,7 +16,7 @@ import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dar
 // import 'package:workerr_app/presentation/user/screens/home/profile/update_work.dart';
 // import 'package:workerr_app/presentation/user/screens/home/profile/work_status.dart';
 // import 'package:workerr_app/presentation/user/widgets/my_app_bar.dart';
-import 'package:workerr_app/presentation/user/widgets/my_tabbed_appbar.dart';
+import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
 class ScreenPost extends StatefulWidget {
   const ScreenPost({Key? key}) : super(key: key);
@@ -569,18 +569,18 @@ class _ScreenPostState extends State<ScreenPost> {
                                     },
                                     icon: Icon(
                                       Icons.broken_image_outlined,
-                                      size: 35,
+                                      size: 40,
                                       color: kc10.shade700,
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.emoji_emotions_outlined,
-                                      size: 35,
-                                      color: kc10.shade700,
-                                    ),
-                                  ),
+                                  // IconButton(
+                                  //   onPressed: () {},
+                                  //   icon: Icon(
+                                  //     Icons.emoji_emotions_outlined,
+                                  //     size: 35,
+                                  //     color: kc10.shade700,
+                                  //   ),
+                                  // ),
                                   const Spacer(),
                                   ElevatedButton.icon(
                                     style: ButtonStyle(

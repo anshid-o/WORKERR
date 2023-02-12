@@ -245,17 +245,17 @@ class _ScreenProfileState extends State<ScreenProfile> {
                                           Colors.red);
                                 },
                               ),
-                              ProfileMenuWidget(
-                                isSwitch: true,
-                                title: 'Availability',
-                                icon: Icons.event_available,
-                                onpress: () {
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //         builder: (ctx) => const UpdateAvailability()));
-                                },
-                              ),
+                              // ProfileMenuWidget(
+                              //   isSwitch: true,
+                              //   title: 'Availability',
+                              //   icon: Icons.event_available,
+                              //   onpress: () {
+                              //     // Navigator.push(
+                              //     //     context,
+                              //     //     MaterialPageRoute(
+                              //     //         builder: (ctx) => const UpdateAvailability()));
+                              //   },
+                              // ),
                               ProfileMenuWidget(
                                 title: 'Report',
                                 icon: Icons.report_problem_rounded,
