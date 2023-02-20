@@ -192,38 +192,6 @@ class _SearchWorkersPageState extends State<SearchWorkersPage> {
                         },
                       ),
                     ),
-                    Center(
-                      child: Container(
-                        width: 250,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: kc30gd),
-                        child: Center(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                                side: const BorderSide(color: kc60, width: 3),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            onLongPress: () {
-                              // Navigator.pop(context);
-                            },
-                            child: const Center(
-                              child: Text(
-                                'Done',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 );
         },

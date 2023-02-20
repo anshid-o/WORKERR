@@ -17,6 +17,7 @@ import 'package:workerr_app/domain/firebase_helper.dart';
 import 'package:workerr_app/presentation/user/Good/backend/users.dart';
 import 'package:workerr_app/presentation/user/screens/main/profile/information.dart';
 import 'package:workerr_app/presentation/user/screens/main/profile/screen_report.dart';
+import 'package:workerr_app/presentation/user/screens/main/profile/settings.dart';
 import 'package:workerr_app/presentation/user/screens/main/profile/work_status.dart';
 // import 'package:workerr_app/presentation/user/screens/home/profile/update_availability.dart';
 import 'package:workerr_app/presentation/user/screens/main/profile/update_profile.dart';
@@ -221,7 +222,13 @@ class _ScreenProfileState extends State<ScreenProfile> {
                               ProfileMenuWidget(
                                 title: 'Settings',
                                 icon: CupertinoIcons.settings_solid,
-                                onpress: () {},
+                                onpress: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SettingsPage(),
+                                      ));
+                                },
                               ),
                               ProfileMenuWidget(
                                 title: 'Update Work',

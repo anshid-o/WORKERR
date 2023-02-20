@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 
-import 'package:workerr_app/presentation/admin/screens/authentication/admins.dart';
+import 'package:workerr_app/presentation/admin/authentication/admins.dart';
 import 'package:workerr_app/presentation/user/widgets/loading.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -135,6 +135,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                       ),
                                       kheight30,
                                       TextFormField(
+                                        textInputAction: TextInputAction.next,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Enter a email';
@@ -154,6 +155,85 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                       kheight30,
                                       kheight,
                                       TextFormField(
+                                          onFieldSubmitted: (value) async {
+                                            setState(() {
+                                              isloading = true;
+                                            });
+                                            var records =
+                                                await FirebaseFirestore.instance
+                                                    .collection('Admins')
+                                                    .get();
+                                            mapRecords(records);
+                                            int i = 0;
+                                            try {
+                                              while (adminList[i].email !=
+                                                      kemail.text &&
+                                                  adminList[i].password !=
+                                                      kpass.text &&
+                                                  i <= adminList.length) {
+                                                i = i + 1;
+                                              }
+                                              if (i <= adminList.length) {
+                                                await auth
+                                                    .signInWithEmailAndPassword(
+                                                        email: kemail.text,
+                                                        password: kpass.text);
+                                                Navigator.of(context)
+                                                    .pushNamed('adminMain');
+                                              } else {
+                                                setState(() {
+                                                  isloading = false;
+                                                });
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return const AlertDialog(
+                                                        title: Text('Error'),
+                                                        content: Text(
+                                                            'Enter valid email & password'),
+                                                      );
+                                                    });
+                                              }
+                                            } on FirebaseAuthException catch (e) {
+                                              if (e.code == 'wrong-password') {
+                                                setState(() {
+                                                  isloading = false;
+                                                });
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30),
+                                                      ),
+                                                      title:
+                                                          const Text("Alert!!"),
+                                                      content: const Text(
+                                                          'Wrong password.'),
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            } catch (e) {
+                                              setState(() {
+                                                isloading = false;
+                                              });
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title:
+                                                          const Text('Error'),
+                                                      content:
+                                                          Text(e.toString()),
+                                                    );
+                                                  });
+                                            }
+                                          },
                                           obscureText: _obscureText,
                                           keyboardType:
                                               TextInputType.emailAddress,

@@ -11,8 +11,8 @@ class Loading extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Container(
       color: kc10,
-      child: Lottie.asset('assets/lottie/paperplane.json',
-          height: size.height * .5),
+      child: Lottie.asset('assets/lottie/worker.json',
+          height: size.height * .5, repeat: false),
     );
   }
 }

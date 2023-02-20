@@ -151,10 +151,10 @@ class _InformationState extends State<Information> {
             ),
             ListTile(
               onTap: () async {
-                final to = 'anshidkoolimad@gmail.com';
-                final subject = 'Contact to Workerr Group';
-                final message =
-                    'Hello Workerr Team,\n\nCheck out this email that sented to contact to workerr group.';
+                const to = 'anshidkoolimad@gmail.com';
+                const subject = 'Contact to Workerr Group';
+                const message =
+                    'Hello\tWorkerr\tTeam,\n\nCheck\tout\tthis\temail\tthat\tsented\tto\tcontact\tto\tworkerr\tgroup.';
                 final ux = Uri(
                     scheme: 'mailto',
                     path: to,

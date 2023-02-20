@@ -6,7 +6,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/presentation/admin/screens/admin_main_screen.dart';
-import 'package:workerr_app/presentation/admin/screens/authentication/admin_login.dart';
+import 'package:workerr_app/presentation/admin/authentication/admin_login.dart';
 import 'package:workerr_app/presentation/user/screens/authentication/login.dart';
 import 'package:workerr_app/presentation/user/screens/authentication/reg2.dart';
 // import 'package:workerr_app/presentation/user/screens/authentication/register.dart';

@@ -57,7 +57,8 @@ textDec(String name, String hint, IconData icon) {
 
 void showDone(BuildContext ctx, String name, IconData icon, Color c) {
   ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-    duration: const Duration(seconds: 1),
+    duration: const Duration(milliseconds: 1500),
+    behavior: SnackBarBehavior.floating,
     content: Row(
       children: [
         Text(

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +7,10 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
-import 'package:workerr_app/domain/firebase_helper.dart';
-import 'package:workerr_app/presentation/admin/screens/authentication/admins.dart';
+// import 'package:workerr_app/domain/firebase_helper.dart';
+import 'package:workerr_app/presentation/admin/authentication/admins.dart';
+// import 'package:workerr_app/presentation/user/screens/authentication/forgot_password.dart';
+// import 'package:workerr_app/presentation/user/screens/authentication/screen_login.dart';
 import 'package:workerr_app/presentation/user/screens/screen_main.dart';
 import 'package:workerr_app/presentation/user/widgets/loading.dart';
 // import 'package:workerr_app/presentation/admin/screens/authentication/admin_login.dart';
@@ -498,6 +502,85 @@ class _LoginState extends State<Login> {
                                             });
                                           }
                                         }
+                                      } on FirebaseAuthException catch (e) {
+                                        if (e.code == 'user-not-found') {
+                                          setState(() {
+                                            loading = false;
+                                          });
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                                title: const Text("Alert!!"),
+                                                content: const Text(
+                                                    'No user found for that email.'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: const Text("OK"),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        } else if (e.code == 'wrong-password') {
+                                          setState(() {
+                                            loading = false;
+                                          });
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                                title: const Text("Alert!!"),
+                                                content: const Text(
+                                                    'Wrong password.'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: const Text(
+                                                      "Forgot Password ?",
+                                                      style: const TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                    onPressed: () {
+                                                      try {
+                                                        Navigator.pop(context);
+                                                        FirebaseAuth.instance
+                                                            .sendPasswordResetEmail(
+                                                                email: kemail
+                                                                    .text);
+                                                        showDone(
+                                                            context,
+                                                            'Link to password reset sent',
+                                                            Icons.send,
+                                                            Colors.green);
+                                                      } catch (e) {
+                                                        print(e.toString());
+                                                      }
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: const Text("OK"),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
                                       } catch (e) {
                                         setState(() {
                                           loading = false;
@@ -588,11 +671,22 @@ class _LoginState extends State<Login> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    'Don\'t have an account?',
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 72, 71, 71),
-                                        fontWeight: FontWeight.bold),
+                                  GestureDetector(
+                                    onDoubleTap: () {
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           LoginRegisterPage(),
+                                      //     ));
+                                    },
+                                    child: const Text(
+                                      'Don\'t have an account?',
+                                      style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 72, 71, 71),
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                   TextButton(
                                     onPressed: () {

@@ -46,7 +46,7 @@ class MyNavigationDrawer extends StatelessWidget {
                         children: [
                           Ink(
                             width: double.infinity,
-                            color: kc10.shade300,
+                            color: kc30,
                             child: InkWell(
                               splashColor: kc30,
                               onTap: () {
@@ -84,14 +84,14 @@ class MyNavigationDrawer extends StatelessWidget {
                                         name[0].toUpperCase() +
                                             name.substring(1),
                                         style: const TextStyle(
-                                          color: kc30,
+                                          color: kc602,
                                           fontSize: 25,
                                           fontWeight: FontWeight.bold,
                                         )),
                                     Text(
                                       document['email'],
                                       style: const TextStyle(
-                                        color: kc30,
+                                        color: kc602,
                                         fontSize: 18,
                                         fontWeight: FontWeight.w400,
                                       ),
@@ -211,10 +211,6 @@ class MyNavigationDrawer extends StatelessWidget {
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                                Lottie.asset(
-                                  'assets/lottie/e-mail-worldwide-delivery.json',
-                                  height: size.height * .2,
                                 ),
                               ],
                             ),

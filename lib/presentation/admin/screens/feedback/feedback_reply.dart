@@ -186,16 +186,16 @@ class FeedbackReply extends StatelessWidget {
                             final now = DateTime.now();
                             String formatter = DateFormat('yMd').format(now);
                             storeUser.collection("Responses").doc().set({
-                              'uid': user.uid,
+                              'uid': uid,
                               'subject': state,
                               'date': formatter,
                               'status': 'Responded',
                               'details': kreply.text,
                             });
-                            storeUser
-                                .collection("Reports")
-                                .doc(id)
-                                .update({'status': 'Responded'});
+                            // storeUser
+                            //     .collection("Reports")
+                            //     .doc(id)
+                            //     .update({'status': 'Responded'});
 
                             Navigator.pop(context);
                           }

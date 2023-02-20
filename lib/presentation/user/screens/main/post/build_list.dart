@@ -50,14 +50,16 @@ class _BuildListState extends State<BuildList> {
         .doc('${widget.id}${widget.myDoc['uid']}');
 
     documentReference.get().then((documentSnapshot) {
-      if (documentSnapshot.exists) {
+      if (documentSnapshot.exists && mounted) {
         setState(() {
           pressed = true;
         });
       } else {
-        setState(() {
-          pressed = false;
-        });
+        if (mounted) {
+          setState(() {
+            pressed = false;
+          });
+        }
       }
     });
     super.initState();
@@ -136,9 +138,12 @@ class _BuildListState extends State<BuildList> {
                                 // focusColor: kred,
                                 // hoverColor: kred,
                                 onPressed: (() {
-                                  setState(() {
-                                    pressed = true;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      pressed = true;
+                                    });
+                                  }
+
                                   final now = DateTime.now();
                                   String formatter =
                                       DateFormat('yMd').format(now);

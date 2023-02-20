@@ -28,6 +28,7 @@ class _SeachPageState extends State<SeachPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kc30.withOpacity(.75),
         title: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

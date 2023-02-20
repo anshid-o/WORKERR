@@ -16,60 +16,114 @@ class TopList2 extends StatefulWidget {
     required this.myDoc,
     Key? key,
   }) : super(key: key);
-
+  String url = '';
+  String place = '';
+  bool flag = false;
+  ImageProvider image = const AssetImage('assets/persons/default.jpg');
   @override
   State<TopList2> createState() => _TopList2State();
 }
 
 class _TopList2State extends State<TopList2> {
   FirebaseFirestore firebase = FirebaseFirestore.instance;
-  // List<String> workers = [
-  //   'Anshid O',
-  //   'Yaseen',
-  //   'Hisham',
-  //   'Nijas Ali',
-  //   'Sidheeq',
-  //   'Junaid',
-  //   'Althaf',
-  //   'Adil',
-  //   'Mishal',
-  // ];
-  // List<String> works2 = [
-  //   'Plumbing',
-  //   'Painting',
-  //   'Fabrication works',
-  //   'Electric repairs',
-  //   'Mechanic',
-  //   'Driver',
-  //   'Plumbing',
-  //   'Painting',
-  //   'Fabrication works',
-  // ];
-  bool flag = false;
-  void initState() {
-    // TODO: implement initState
+
+  getUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     final documentReference = FirebaseFirestore.instance
         .collection("Favorites")
         .doc('${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
 
     documentReference.get().then((documentSnapshot) {
-      if (documentSnapshot.exists) {
+      if (documentSnapshot.exists &&
+          mounted &&
+          documentSnapshot['status'] == true) {
+        setState(() {
+          widget.flag = true;
+        });
         // The document exists
-        final data = documentSnapshot.data();
+        // final data = documentSnapshot.data();
 
         // You can now access the values stored in the document
-        if (data!['status'] == true) {
-          setState(() {
-            flag = true;
-          });
-        } else {
-          setState(() {
-            flag = false;
-          });
-        }
       }
     });
+
+    final userData =
+        FirebaseFirestore.instance.collection("Users").doc(widget.myDoc['uid']);
+    userData.get().then((us) {
+      if (us.exists && mounted) {
+        final userDoc = us.data();
+
+        setState(() {
+          widget.url = userDoc!['imageUrl'];
+          widget.place = userDoc['place'];
+          widget.image = widget.url == ''
+              ? const AssetImage('assets/persons/default.jpg')
+              : NetworkImage(widget.url) as ImageProvider;
+        });
+      }
+    });
+  }
+
+  // void _add() async {
+  //   await FirebaseFirestore.instance
+  //       .collection("Favorites")
+  //       .doc('${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc.id}')
+  //       .set({
+  //     "itemId": widget.myDoc.id,
+  //     "like": true,
+  //   });
+  //   await firebase
+  //       .collection('Posts')
+  //       .doc(widget.myDoc.id)
+  //       .update({'like': FieldValue.increment(1)});
+  //   setState(() {
+  //     flag = true;
+  //   });
+  // }
+
+  // void _remove() async {
+  //   await FirebaseFirestore.instance
+  //       .collection("Likes")
+  //       .doc('${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc.id}')
+  //       .delete();
+  //   await firebase
+  //       .collection('Posts')
+  //       .doc(widget.myDoc.id)
+  //       .update({'like': FieldValue.increment(-1)});
+  //   setState(() {
+  //     flag = false;
+  //   });
+
+  //   // likes.documents.forEach((like) async {
+  //   //   await Firestore.instance.collection("likes").document(like.documentID).delete();
+  //   // });
+  // }
+
+  void initState() {
+    getUserData();
+    // TODO: implement initState
+    // final user = FirebaseAuth.instance.currentUser;
+    // final documentReference = FirebaseFirestore.instance
+    //     .collection("Favorites")
+    //     .doc('${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
+
+    // documentReference.get().then((documentSnapshot) {
+    //   if (documentSnapshot.exists && mounted) {
+    //     // The document exists
+    //     final data = documentSnapshot.data();
+
+    //     // You can now access the values stored in the document
+    //     if (data!['status'] == true) {
+    //       setState(() {
+    //         flag = true;
+    //       });
+    //     } else {
+    //       setState(() {
+    //         flag = false;
+    //       });
+    //     }
+    //   }
+    // });
     super.initState();
   }
 
@@ -85,214 +139,379 @@ class _TopList2State extends State<TopList2> {
     //   }
     // }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: firebase
-          .collection("Users")
-          .where('uid', isEqualTo: widget.myDoc['uid'])
-          .snapshots(),
-      // .where({"status", "is", "Requested"}).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return const Center();
-          default:
-            DocumentSnapshot document = snapshot.data!.docs[0];
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+            gradient: kgoldgd, borderRadius: BorderRadius.circular(15)),
+        // color: Colors.white,
+        child: ExpansionTile(
+          leading: CircleAvatar(
+            radius: 32,
+            backgroundImage: widget.image,
+          ),
+          title: Text(
+            widget.myDoc['name'],
+            style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: kc30,
+                letterSpacing: 0),
+          ),
+          subtitle: Text(
+            widget.myDoc['job'],
+            textAlign: TextAlign.left,
+            style: const TextStyle(
+              color: kc30,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          trailing: IconButton(
+            onPressed: () {
+              // insertItem(workers[i]);
+              final user = FirebaseAuth.instance.currentUser;
+              final documentReference = FirebaseFirestore.instance
+                  .collection("Favorites")
+                  .doc(
+                      '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
 
-            ImageProvider image = document['imageUrl'] == ''
-                ? const AssetImage('assets/persons/default.jpg')
-                : NetworkImage(document['imageUrl']) as ImageProvider;
-            return snapshot.data!.docs.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: kgoldgd,
-                          borderRadius: BorderRadius.circular(15)),
-                      // color: Colors.white,
-                      child: ExpansionTile(
-                        leading: CircleAvatar(
-                          radius: 32,
-                          backgroundImage: image,
-                        ),
-                        title: Text(
-                          widget.myDoc['name'],
-                          style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: kc30,
-                              letterSpacing: 0),
-                        ),
-                        subtitle: Text(
-                          widget.myDoc['job'],
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            color: kc30,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            // insertItem(workers[i]);
-                            final user = FirebaseAuth.instance.currentUser;
-                            final documentReference = FirebaseFirestore.instance
-                                .collection("Favorites")
-                                .doc(
-                                    '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
+              documentReference.get().then((documentSnapshot) {
+                if (documentSnapshot.exists) {
+                  // The document exists
+                  final data = documentSnapshot.data();
 
-                            documentReference.get().then((documentSnapshot) {
-                              if (documentSnapshot.exists) {
-                                // The document exists
-                                final data = documentSnapshot.data();
+                  // You can now access the values stored in the document
+                  if (data!['status'] == true) {
+                    (firebase
+                        .collection('Favorites')
+                        .doc(
+                            '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                        .update({'status': false}));
+                    setState(() {
+                      widget.flag = false;
+                    });
+                  } else {
+                    firebase
+                        .collection('Favorites')
+                        .doc(
+                            '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                        .update({'status': true});
+                    setState(() {
+                      widget.flag = true;
+                    });
+                  }
+                } else {
+                  firebase
+                      .collection("Favorites")
+                      .doc(
+                          '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                      .set({
+                    'status': true,
+                    'name': widget.myDoc['name'],
+                    'uid': FirebaseAuth.instance.currentUser!.uid,
+                    'wid': widget.myDoc.id,
+                    'time': DateTime.now()
+                  });
+                  setState(() {
+                    widget.flag = true;
+                  });
+                }
+              });
 
-                                // You can now access the values stored in the document
-                                if (data!['status'] == true) {
-                                  (firebase
-                                      .collection('Favorites')
-                                      .doc(
-                                          '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                                      .update({'status': false}));
-                                  setState(() {
-                                    flag = false;
-                                  });
-                                } else {
-                                  firebase
-                                      .collection('Favorites')
-                                      .doc(
-                                          '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                                      .update({'status': true});
-                                  setState(() {
-                                    flag = true;
-                                  });
-                                }
-                              } else {
-                                firebase
-                                    .collection("Favorites")
-                                    .doc(
-                                        '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                                    .set({
-                                  'status': true,
-                                  'name': widget.myDoc['name'],
-                                  'uid': FirebaseAuth.instance.currentUser!.uid,
-                                  'wid': widget.myDoc.id,
-                                  'time': DateTime.now()
-                                });
-                                setState(() {
-                                  flag = true;
-                                });
-                              }
-                            });
+              // if (!flag) {
+              //   showDone(
+              //       context,
+              //       '${widget.myDoc['name']} removed from favorites',
+              //       Icons.error_outline,
+              //       Colors.red);
+              //   // if(checkDoc('Favorites','${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')){
 
-                            // if (!flag) {
-                            //   showDone(
-                            //       context,
-                            //       '${widget.myDoc['name']} removed from favorites',
-                            //       Icons.error_outline,
-                            //       Colors.red);
-                            //   // if(checkDoc('Favorites','${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')){
+              //   // }
+              //   firebase
+              //       .collection("Favorites")
+              //       .doc(
+              //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
+              //       .update({
+              //     'status': flag,
+              //   });
+              //   // favWorkers.removeAt(j);
+              // }
 
-                            //   // }
-                            //   firebase
-                            //       .collection("Favorites")
-                            //       .doc(
-                            //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
-                            //       .update({
-                            //     'status': flag,
-                            //   });
-                            //   // favWorkers.removeAt(j);
-                            // }
+              // if (flag) {
+              //   final now = DateTime.now();
 
-                            // if (flag) {
-                            //   final now = DateTime.now();
-
-                            //   firebase
-                            //       .collection("Favorites")
-                            //       .doc(
-                            //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
-                            //       .set({
-                            //     'uid': FirebaseAuth.instance.currentUser!.uid,
-                            //     'wid': document['uid'],
-                            //     'status': !flag,
-                            //     'time': now,
-                            //   });
-                            //   // favWorkers
-                            //   //     .add(FavWorkers(name: widget.myDoc['name']));
-                            //   showDoneTop(context, widget.myDoc['name']);
-                            // }
-                            // setState(() {
-                            //   flag = !flag;
-                            // });
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (ctx) => const MyTabbedAppBar(),
-                            //   ),
-                            // );
-                          },
-                          icon: flag
-                              ? const Icon(
-                                  CupertinoIcons.heart_solid,
-                                  color: kred,
-                                  shadows: kshadow,
-                                )
-                              : const Icon(
-                                  CupertinoIcons.heart,
-                                  color: kred,
-                                  shadows: kshadow,
-                                ),
-                        ),
-                        children: [
-                          ksize(y: 5),
-                          Text(
-                            'Rating : ${widget.myDoc['rating']}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: kc30),
-                          ),
-                          ksize(y: 5),
-                          Text(
-                            'Experience : ${widget.myDoc['name']}',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: kc30),
-                          ),
-                          Text(
-                            document['place'],
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: kc30,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              //   firebase
+              //       .collection("Favorites")
+              //       .doc(
+              //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
+              //       .set({
+              //     'uid': FirebaseAuth.instance.currentUser!.uid,
+              //     'wid': document['uid'],
+              //     'status': !flag,
+              //     'time': now,
+              //   });
+              //   // favWorkers
+              //   //     .add(FavWorkers(name: widget.myDoc['name']));
+              //   showDoneTop(context, widget.myDoc['name']);
+              // }
+              // setState(() {
+              //   flag = !flag;
+              // });
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (ctx) => const MyTabbedAppBar(),
+              //   ),
+              // );
+            },
+            icon: widget.flag
+                ? const Icon(
+                    CupertinoIcons.heart_solid,
+                    color: kred,
+                    shadows: kshadow,
                   )
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: kc60, borderRadius: BorderRadius.circular(20)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'You are not posted any works yet.',
-                          style: TextStyle(
-                              fontSize: 30,
-                              color: kc30,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  );
-        }
-      },
+                : const Icon(
+                    CupertinoIcons.heart,
+                    color: kred,
+                    shadows: kshadow,
+                  ),
+          ),
+          children: [
+            ksize(y: 5),
+            Text(
+              'Rating : ${widget.myDoc['rating']}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.bold, color: kc30),
+            ),
+            ksize(y: 5),
+            Text(
+              'Experience : ${widget.myDoc['name']}',
+              style: const TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.bold, color: kc30),
+            ),
+            Text(
+              widget.place,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: kc30,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+
+    //  StreamBuilder<QuerySnapshot>(
+    //   stream: firebase
+    //       .collection("Users")
+    //       .where('uid', isEqualTo: widget.myDoc['uid'])
+    //       .snapshots(),
+    //   // .where({"status", "is", "Requested"}).snapshots(),
+    //   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    //     if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+    //     switch (snapshot.connectionState) {
+    //       case ConnectionState.waiting:
+    //         return const Center();
+    //       default:
+    //         DocumentSnapshot document = snapshot.data!.docs[0];
+
+    //         ImageProvider image = document['imageUrl'] == ''
+    //             ? const AssetImage('assets/persons/default.jpg')
+    //             : NetworkImage(document['imageUrl']) as ImageProvider;
+    //         return snapshot.data!.docs.isNotEmpty
+    //             ? Padding(
+    //                 padding: const EdgeInsets.all(8.0),
+    //                 child: Container(
+    //                   decoration: BoxDecoration(
+    //                       gradient: kgoldgd,
+    //                       borderRadius: BorderRadius.circular(15)),
+    //                   // color: Colors.white,
+    //                   child: ExpansionTile(
+    //                     leading: CircleAvatar(
+    //                       radius: 32,
+    //                       backgroundImage: image,
+    //                     ),
+    //                     title: Text(
+    //                       widget.myDoc['name'],
+    //                       style: const TextStyle(
+    //                           fontSize: 25,
+    //                           fontWeight: FontWeight.bold,
+    //                           color: kc30,
+    //                           letterSpacing: 0),
+    //                     ),
+    //                     subtitle: Text(
+    //                       widget.myDoc['job'],
+    //                       textAlign: TextAlign.left,
+    //                       style: const TextStyle(
+    //                         color: kc30,
+    //                         fontSize: 18,
+    //                         fontWeight: FontWeight.bold,
+    //                       ),
+    //                     ),
+    //                     trailing: IconButton(
+    //                       onPressed: () {
+    //                         // insertItem(workers[i]);
+    //                         final user = FirebaseAuth.instance.currentUser;
+    //                         final documentReference = FirebaseFirestore.instance
+    //                             .collection("Favorites")
+    //                             .doc(
+    //                                 '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
+
+    //                         documentReference.get().then((documentSnapshot) {
+    //                           if (documentSnapshot.exists) {
+    //                             // The document exists
+    //                             final data = documentSnapshot.data();
+
+    //                             // You can now access the values stored in the document
+    //                             if (data!['status'] == true) {
+    //                               (firebase
+    //                                   .collection('Favorites')
+    //                                   .doc(
+    //                                       '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+    //                                   .update({'status': false}));
+    //                               setState(() {
+    //                                 flag = false;
+    //                               });
+    //                             } else {
+    //                               firebase
+    //                                   .collection('Favorites')
+    //                                   .doc(
+    //                                       '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+    //                                   .update({'status': true});
+    //                               setState(() {
+    //                                 flag = true;
+    //                               });
+    //                             }
+    //                           } else {
+    //                             firebase
+    //                                 .collection("Favorites")
+    //                                 .doc(
+    //                                     '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+    //                                 .set({
+    //                               'status': true,
+    //                               'name': widget.myDoc['name'],
+    //                               'uid': FirebaseAuth.instance.currentUser!.uid,
+    //                               'wid': widget.myDoc.id,
+    //                               'time': DateTime.now()
+    //                             });
+    //                             setState(() {
+    //                               flag = true;
+    //                             });
+    //                           }
+    //                         });
+
+    //                         // if (!flag) {
+    //                         //   showDone(
+    //                         //       context,
+    //                         //       '${widget.myDoc['name']} removed from favorites',
+    //                         //       Icons.error_outline,
+    //                         //       Colors.red);
+    //                         //   // if(checkDoc('Favorites','${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')){
+
+    //                         //   // }
+    //                         //   firebase
+    //                         //       .collection("Favorites")
+    //                         //       .doc(
+    //                         //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
+    //                         //       .update({
+    //                         //     'status': flag,
+    //                         //   });
+    //                         //   // favWorkers.removeAt(j);
+    //                         // }
+
+    //                         // if (flag) {
+    //                         //   final now = DateTime.now();
+
+    //                         //   firebase
+    //                         //       .collection("Favorites")
+    //                         //       .doc(
+    //                         //           '${FirebaseAuth.instance.currentUser!.uid}${document['uid']}')
+    //                         //       .set({
+    //                         //     'uid': FirebaseAuth.instance.currentUser!.uid,
+    //                         //     'wid': document['uid'],
+    //                         //     'status': !flag,
+    //                         //     'time': now,
+    //                         //   });
+    //                         //   // favWorkers
+    //                         //   //     .add(FavWorkers(name: widget.myDoc['name']));
+    //                         //   showDoneTop(context, widget.myDoc['name']);
+    //                         // }
+    //                         // setState(() {
+    //                         //   flag = !flag;
+    //                         // });
+    //                         // Navigator.push(
+    //                         //   context,
+    //                         //   MaterialPageRoute(
+    //                         //     builder: (ctx) => const MyTabbedAppBar(),
+    //                         //   ),
+    //                         // );
+    //                       },
+    //                       icon: flag
+    //                           ? const Icon(
+    //                               CupertinoIcons.heart_solid,
+    //                               color: kred,
+    //                               shadows: kshadow,
+    //                             )
+    //                           : const Icon(
+    //                               CupertinoIcons.heart,
+    //                               color: kred,
+    //                               shadows: kshadow,
+    //                             ),
+    //                     ),
+    //                     children: [
+    //                       ksize(y: 5),
+    //                       Text(
+    //                         'Rating : ${widget.myDoc['rating']}',
+    //                         textAlign: TextAlign.center,
+    //                         style: const TextStyle(
+    //                             fontSize: 15,
+    //                             fontWeight: FontWeight.bold,
+    //                             color: kc30),
+    //                       ),
+    //                       ksize(y: 5),
+    //                       Text(
+    //                         'Experience : ${widget.myDoc['name']}',
+    //                         style: const TextStyle(
+    //                             fontSize: 15,
+    //                             fontWeight: FontWeight.bold,
+    //                             color: kc30),
+    //                       ),
+    //                       Text(
+    //                         document['place'],
+    //                         style: const TextStyle(
+    //                           fontSize: 15,
+    //                           fontWeight: FontWeight.bold,
+    //                           color: kc30,
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                 ),
+    //               )
+    //             : Padding(
+    //                 padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
+    //                 child: Container(
+    //                   decoration: BoxDecoration(
+    //                       color: kc60, borderRadius: BorderRadius.circular(20)),
+    //                   child: const Padding(
+    //                     padding: EdgeInsets.all(8.0),
+    //                     child: Text(
+    //                       'You are not posted any works yet.',
+    //                       style: TextStyle(
+    //                           fontSize: 30,
+    //                           color: kc30,
+    //                           fontWeight: FontWeight.bold),
+    //                       textAlign: TextAlign.center,
+    //                     ),
+    //                   ),
+    //                 ),
+    //               );
+    //     }
+    //   },
+    // );
   }
 }
 

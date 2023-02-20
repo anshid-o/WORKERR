@@ -31,6 +31,7 @@ class ViewResponses extends StatelessWidget {
         stream: firebase
             .collection("Responses")
             .where("status", isEqualTo: 'Responded')
+            .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .snapshots(),
         // .where({"status", "is", "Requested"}).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

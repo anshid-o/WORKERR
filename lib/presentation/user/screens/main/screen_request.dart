@@ -11,10 +11,36 @@ import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 import 'package:workerr_app/presentation/user/widgets/request_card.dart';
 import 'package:workerr_app/presentation/user/widgets/request_card2.dart';
 
-class ScreenRequest extends StatelessWidget {
+class ScreenRequest extends StatefulWidget {
   ScreenRequest({Key? key}) : super(key: key);
+  int count = -1;
+  @override
+  State<ScreenRequest> createState() => _ScreenRequestState();
+}
+
+class _ScreenRequestState extends State<ScreenRequest> {
   FirebaseFirestore firebase = FirebaseFirestore.instance;
+
   final user = FirebaseAuth.instance.currentUser;
+  getData() async {
+    final a = await FirebaseFirestore.instance.collection("Workers").get();
+    if (mounted) {
+      for (var element in a.docs) {
+        if (element['uid'] == FirebaseAuth.instance.currentUser!.uid) {
+          setState(() {
+            widget.count = 1;
+          });
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    getData();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,67 +80,101 @@ class ScreenRequest extends StatelessWidget {
             ],
           ),
         ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: firebase
-              .collection("Requests")
-              .where("to", isEqualTo: user!.uid)
-              .snapshots(),
-          // .where({"status", "is", "Requested"}).snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return const Center(
-                  child: CircularProgressIndicator(
-                    value: 60,
-                    backgroundColor: kc60,
-                  ),
-                );
-              default:
-                return snapshot.data!.docs.isNotEmpty
-                    ? ListView.builder(
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot document =
-                              snapshot.data!.docs[index];
-                          return RequestCard2(
-                            myDoc: document,
-                          );
-                        },
-                        itemCount: snapshot.data!.docs.length,
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Lottie.asset('assets/lottie/not-found.json'),
-                              Container(
-                                height: size.height * .15,
-                                decoration: BoxDecoration(
-                                    color: kc60,
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Text(
-                                      'No requests found in your inbox, yet !',
-                                      style: TextStyle(
-                                          fontSize: 30,
-                                          color: kc30,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+        body: widget.count == 1
+            ? StreamBuilder<QuerySnapshot>(
+                stream: firebase
+                    .collection("Requests")
+                    .where("to", isEqualTo: user!.uid)
+                    .where('status', isEqualTo: 'Requested')
+                    .snapshots(),
+                // .where({"status", "is", "Requested"}).snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError)
+                    return Text('Error: ${snapshot.error}');
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          value: 60,
+                          backgroundColor: kc60,
                         ),
                       );
-            }
-          },
-        ),
+                    default:
+                      return snapshot.data!.docs.isNotEmpty
+                          ? ListView.builder(
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot document =
+                                    snapshot.data!.docs[index];
+                                return RequestCard2(
+                                  myDoc: document,
+                                );
+                              },
+                              itemCount: snapshot.data!.docs.length,
+                            )
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30),
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    Lottie.asset(
+                                        'assets/lottie/not-found.json'),
+                                    Container(
+                                      height: size.height * .15,
+                                      decoration: BoxDecoration(
+                                          color: kc60,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                          child: Text(
+                                            'No requests found in your inbox, yet !',
+                                            style: TextStyle(
+                                                fontSize: 30,
+                                                color: kc30,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                  }
+                },
+              )
+            : Column(
+                children: [
+                  Center(
+                      child: Lottie.asset('assets/lottie/safety.json',
+                          repeat: false)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Container(
+                      height: size.height * .15,
+                      decoration: BoxDecoration(
+                          color: kc60, borderRadius: BorderRadius.circular(20)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            'Only verified workers get requests !',
+                            style: TextStyle(
+                                fontSize: 28,
+                                color: kc30,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

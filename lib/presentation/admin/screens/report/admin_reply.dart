@@ -168,7 +168,7 @@ class AdminReply extends StatelessWidget {
                             final now = DateTime.now();
                             String formatter = DateFormat('yMd').format(now);
                             storeUser.collection("Responses").doc().set({
-                              'uid': user.uid,
+                              'uid': uid,
                               'subject': subject,
                               'date': formatter,
                               'status': 'Responded',

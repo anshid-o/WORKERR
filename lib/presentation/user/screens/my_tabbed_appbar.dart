@@ -22,17 +22,7 @@ class MyTabbedAppBar extends StatefulWidget {
 
 class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
   FirebaseFirestore firebase = FirebaseFirestore.instance;
-  List<String> workers = [
-    'Anshid O',
-    'Yaseen',
-    'Hisham',
-    'Nijas Ali',
-    'Sidheeq',
-    'Junaid',
-    'Althaf',
-    'Adil',
-    'Mishal',
-  ];
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -108,29 +98,6 @@ class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
                     ],
                   ),
                 ),
-                // Tab(
-                //   // iconMargin: EdgeInsets.only(bottom: 2),
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     children: [
-                //       kheight20,
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.start,
-                //         children: const [
-                //           Icon(
-                //             Icons.category_outlined,
-                //             color: Colors.green,
-                //           ),
-                //           Text(
-                //             ' Categories',
-                //             style: TextStyle(
-                //                 fontSize: 12, fontWeight: FontWeight.bold),
-                //           ),
-                //         ],
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 Tab(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -153,23 +120,9 @@ class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
                       ),
                     ],
                   ),
-
-                  // TabBarRow(
-                  //   name: 'My Favorite',
-                  //   icon: Icons.favorite,
-                  //   color: Colors.red,
-                  // ),
                 ),
               ]),
             ),
-            // floatingActionButton: FloatingActionButton(
-            //   child: Icon(Icons.arrow_forward),
-            //   onPressed: () {
-            //     final newIndex = controller.selectedItem + 1;
-            //     controller.animateToItem(newIndex,
-            //         duration: Duration(seconds: 1), curve: Curves.easeOut);
-            //   },
-            // ),
             body: StreamBuilder<QuerySnapshot>(
               stream: firebase
                   .collection("Workers")
@@ -188,10 +141,6 @@ class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
                       ),
                     );
                   default:
-
-                    // ImageProvider image = document['imageUrl'] == ''
-                    //     ? const AssetImage('assets/persons/default.jpg')
-                    //     : NetworkImage(document['imageUrl']) as ImageProvider;
                     return snapshot.data!.docs.isNotEmpty
                         ? TabBarView(children: [
                             ListView.builder(
@@ -275,129 +224,129 @@ class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
   }
 }
 
-class CategoryCard extends StatefulWidget {
-  String category;
-  int i;
-  CategoryCard({
-    required this.category,
-    required this.i,
-    Key? key,
-  }) : super(key: key);
+// class CategoryCard extends StatefulWidget {
+//   String category;
+//   int i;
+//   CategoryCard({
+//     required this.category,
+//     required this.i,
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  State<CategoryCard> createState() => _CategoryCardState();
-}
+//   @override
+//   State<CategoryCard> createState() => _CategoryCardState();
+// }
 
-class _CategoryCardState extends State<CategoryCard> {
-  List<String> workers = [
-    'Anshid O',
-    'Yaseen',
-    'Hisham',
-    'Nijas Ali',
-    'Sidheeq',
-    'Junaid',
-    'Althaf',
-    'Adil',
-    'Mishal',
-  ];
-  @override
-  Widget build(BuildContext context) {
-    bool isPressed = false;
-    return Center(
-      child: Container(
-        width: 370,
-        height: 310,
-        decoration: BoxDecoration(
-          // color: Colors.white,
-          gradient: kwhitegd2,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  "Best ${widget.category}",
-                  style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.black,
-                      color: kc30,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      isPressed = !isPressed;
-                    });
-                  },
-                  child: CircleAvatar(
-                    radius: 20,
-                    child: isPressed
-                        ? const Icon(
-                            Icons.bookmark_added,
-                            color: Colors.red,
-                          )
-                        : const Icon(
-                            Icons.bookmark,
-                            color: Colors.red,
-                          ),
-                  ),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage('assets/abbc.jpg'),
-                    )
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Name : ${workers[widget.i]}',
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    kheight20,
-                    const Text(
-                      'Place : Areakode',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    kheight20,
-                    const Text(
-                      'Rating : 4.8',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class _CategoryCardState extends State<CategoryCard> {
+//   // List<String> workers = [
+//   //   'Anshid O',
+//   //   'Yaseen',
+//   //   'Hisham',
+//   //   'Nijas Ali',
+//   //   'Sidheeq',
+//   //   'Junaid',
+//   //   'Althaf',
+//   //   'Adil',
+//   //   'Mishal',
+//   // ];
+//   @override
+//   Widget build(BuildContext context) {
+//     bool isPressed = false;
+//     return Center(
+//       child: Container(
+//         width: 370,
+//         height: 310,
+//         decoration: BoxDecoration(
+//           // color: Colors.white,
+//           gradient: kwhitegd2,
+//           borderRadius: BorderRadius.circular(20),
+//         ),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 Text(
+//                   "Best ${widget.category}",
+//                   style: const TextStyle(
+//                       decoration: TextDecoration.underline,
+//                       decorationColor: Colors.black,
+//                       color: kc30,
+//                       fontSize: 30,
+//                       fontWeight: FontWeight.bold),
+//                 ),
+//                 InkWell(
+//                   onTap: () {
+//                     setState(() {
+//                       isPressed = !isPressed;
+//                     });
+//                   },
+//                   child: CircleAvatar(
+//                     radius: 20,
+//                     child: isPressed
+//                         ? const Icon(
+//                             Icons.bookmark_added,
+//                             color: Colors.red,
+//                           )
+//                         : const Icon(
+//                             Icons.bookmark,
+//                             color: Colors.red,
+//                           ),
+//                   ),
+//                 )
+//               ],
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceAround,
+//               children: [
+//                 Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: const [
+//                     CircleAvatar(
+//                       radius: 50,
+//                       backgroundImage: AssetImage('assets/abbc.jpg'),
+//                     )
+//                   ],
+//                 ),
+//                 Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   mainAxisAlignment: MainAxisAlignment.start,
+//                   children: [
+//                     Text(
+//                       'Name : ${workers[widget.i]}',
+//                       style: const TextStyle(
+//                           color: Colors.black,
+//                           fontSize: 25,
+//                           fontWeight: FontWeight.bold),
+//                     ),
+//                     kheight20,
+//                     const Text(
+//                       'Place : Areakode',
+//                       style: TextStyle(
+//                           color: Colors.black,
+//                           fontSize: 25,
+//                           fontWeight: FontWeight.bold),
+//                     ),
+//                     kheight20,
+//                     const Text(
+//                       'Rating : 4.8',
+//                       style: TextStyle(
+//                           color: Colors.black,
+//                           fontSize: 25,
+//                           fontWeight: FontWeight.bold),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class TabBarRow extends StatelessWidget {
   String name;

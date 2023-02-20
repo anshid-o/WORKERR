@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/domain/firebase_helper.dart';
-import 'package:workerr_app/presentation/admin/screens/authentication/admins.dart';
+import 'package:workerr_app/presentation/admin/authentication/admins.dart';
 import 'package:workerr_app/presentation/admin/screens/profile/admin_update_profile.dart';
 import 'package:workerr_app/presentation/user/screens/main/profile/information.dart';
 // import 'package:workerr_app/presentation/user/widgets/my_app_bar.dart';

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/domain/firebase_helper.dart';
+import 'package:workerr_app/presentation/user/screens/authentication/screen_login.dart';
 import 'package:workerr_app/presentation/user/screens/screen_main.dart';
 import 'package:workerr_app/presentation/user/widgets/loading.dart';
 
@@ -38,7 +39,40 @@ class _Register2State extends State<Register2> {
   bool loading = false;
 
   final _formKeys = GlobalKey<FormState>();
-  double x = .52;
+  double x = .58;
+
+  void sendOTP(String phoneNumber) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // Automatically sign in the user
+        UserCredential userCredential =
+            await auth.signInWithCredential(credential);
+        User? user = userCredential.user;
+        print('User signed in automatically: ${user!.uid}');
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print('Phone verification failed: ${e.code}');
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        // Save the verification ID for later use
+        print('Verification ID: $verificationId');
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        // Auto-retrieval timed out
+      },
+    );
+  }
+
+  void verifyOTP(String verificationId, String smsCode) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId, smsCode: smsCode);
+    UserCredential userCredential = await auth.signInWithCredential(credential);
+    User? user = userCredential.user;
+    print('User signed in with phone number: ${user!.phoneNumber}');
+  }
 
   // This widget is the root of your application.
   @override
@@ -196,14 +230,12 @@ class _Register2State extends State<Register2> {
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
-                                              return 'Enter a pin code';
-                                            } else if (value.length < 6) {
-                                              return 'pin code must contan 6 letters';
+                                              return 'Enter place';
                                             } else {
                                               return null;
                                             }
                                           },
-                                          keyboardType: TextInputType.number,
+                                          keyboardType: TextInputType.text,
                                           textAlign: TextAlign.center,
                                           // onChanged: (value) {
                                           //   pin = value;
@@ -452,40 +484,35 @@ class _Register2State extends State<Register2> {
                                                 email: kemail.text,
                                                 password: kpass.text);
                                         // print('tried to create');
-                                        final user =
-                                            FirebaseAuth.instance.currentUser;
-                                        if (user != null) {
-                                          // print('user not null');
-                                          storeUser
-                                              .collection("Users")
-                                              .doc(user.uid)
-                                              .set({
-                                            'uid': user.uid,
-                                            'email': user.email,
-                                            'password': kpass.text,
-                                            'name': kname.text,
-                                            'phone': kphone.text,
-                                            'place': kpin.text,
-                                            'status': 'R',
-                                            'imageUrl': ''
-                                          });
-                                          // print('store');
-                                          prefs.setString('email', kemail.text);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (ctx) =>
-                                                      const ScreenMain()));
-                                          showDone(
-                                              context,
-                                              'Registered successfully',
-                                              Icons.done,
-                                              Colors.green);
-                                          setState(() {
-                                            loading = false;
-                                          });
-                                          // print('navigated');
+                                        // sendOTP(kphone.text);
+
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (ctx) =>
+                                                    EmailVerificationScreen(
+                                                        name: kname.text,
+                                                        phone: kphone.text,
+                                                        pin: kpin.text)));
+
+                                        setState(() {
+                                          loading = false;
+                                        });
+                                        // print('navigated');
+                                      } on FirebaseAuthException catch (e) {
+                                        if (e.code == 'weak-password') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'The password provided is too weak.')));
+                                        } else if (e.code ==
+                                            'email-already-in-use') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'The account already exists for that email.')));
                                         }
+                                        return null;
                                       } catch (e) {
                                         // print('catch');
                                         setState(() {

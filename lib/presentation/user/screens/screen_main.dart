@@ -1,4 +1,6 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +31,22 @@ class ScreenMain extends StatefulWidget {
 
 class _ScreenMainState extends State<ScreenMain> {
   int index = 0;
+  int count = -1;
   Service service = Service();
 
   final auth = FirebaseAuth.instance;
+  getData() async {
+    final a = await FirebaseFirestore.instance.collection("Workers").get();
+    if (mounted) {
+      for (var element in a.docs) {
+        if (element['uid'] == FirebaseAuth.instance.currentUser!.uid) {
+          setState(() {
+            count = 1;
+          });
+        }
+      }
+    }
+  }
 
   getCurrentUser() {
     final user = auth.currentUser;
@@ -42,6 +57,7 @@ class _ScreenMainState extends State<ScreenMain> {
 
   @override
   void initState() {
+    getData();
     // TODO: implement initState
     super.initState();
     getCurrentUser();
@@ -114,9 +130,11 @@ class _ScreenMainState extends State<ScreenMain> {
           activeColor: kc10,
           textAlign: TextAlign.center,
           inactiveColor: Colors.grey,
-          icon: const Icon(
-            CupertinoIcons.globe,
-          ),
+          icon: count == 1
+              ? const Icon(
+                  CupertinoIcons.globe,
+                )
+              : const Icon(Icons.lock),
           title: const Text('Request'),
         ),
         BottomNavyBarItem(
@@ -130,9 +148,11 @@ class _ScreenMainState extends State<ScreenMain> {
         ),
       ],
       onItemSelected: (index) {
-        setState(() {
-          this.index = index;
-        });
+        if (mounted) {
+          setState(() {
+            this.index = index;
+          });
+        }
       },
     );
   }

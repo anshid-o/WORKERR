@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,7 @@ class _ScreenHomeState extends State<ScreenHome> {
                       builder: (context) => const MyTabbedAppBar(),
                     ),
                   );
+                  // checkNet();
                 },
                 icon: const Icon(
                   CupertinoIcons.person_3_fill,
@@ -71,10 +73,7 @@ class _ScreenHomeState extends State<ScreenHome> {
           stream: firebase
               .collection("Posts")
               .orderBy('time', descending: true)
-              // .where('status', isNotEqualTo: 'Completed')
-              // .where('status', isNotEqualTo: 'Failed')
               .snapshots(),
-          // .where({"status", "is", "Requested"}).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
@@ -84,28 +83,41 @@ class _ScreenHomeState extends State<ScreenHome> {
                     child: Lottie.asset('assets/lottie/not-found.json'));
               default:
                 return snapshot.data!.docs.isNotEmpty
-                    ? ListView.builder(
+                    ? ListView.separated(
+                        separatorBuilder: (context, index) {
+                          return const Divider(
+                            thickness: .3,
+                            indent: 10,
+                            endIndent: 10,
+                            color: Colors.grey,
+                          );
+                        },
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (BuildContext context, int index) {
                           DocumentSnapshot document =
                               snapshot.data!.docs[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: kc602,
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  PostCard(
-                                    index: index,
-                                    isHome: true,
-                                    size: size,
-                                    myDoc: document,
-                                  ),
-                                ],
-                              ),
+                          return Container(
+                            decoration: BoxDecoration(
+                                // boxShadow: [
+                                //   BoxShadow(
+                                //     color: kc10.shade800,
+                                //     offset: Offset(3.0, 3.0),
+                                //     blurRadius: 3.0,
+                                //     spreadRadius: 1.0,
+                                //   ),
+                                // ],
+                                // color: Color.fromARGB(255, 206, 204, 204),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                PostCard(
+                                  index: index,
+                                  isHome: true,
+                                  size: size,
+                                  myDoc: document,
+                                ),
+                              ],
                             ),
                           );
                         },

@@ -6,7 +6,9 @@ class UserDetails extends StatelessWidget {
   ImageProvider img;
   String name;
   String page;
+
   int index;
+
   UserDetails(
       {super.key,
       this.page = 'chat',

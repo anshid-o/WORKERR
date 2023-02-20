@@ -107,6 +107,34 @@ const kgreengd3 = LinearGradient(
       Color.fromARGB(255, 250, 97, 115),
     ]);
 
+const pinglet = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      // #ee9ca7 → #ffdde1
+
+      Color(0xFFee9ca7),
+      Color(0xFFffdde1),
+    ]);
+const socialLive = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      // #ee9ca7 → #ffdde1
+
+      Color(0xFF06beb6),
+      Color(0xFF48b1bf),
+    ]);
+const rosenna = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      // #ee9ca7 → #ffdde1
+
+      Color(0xFFffafbd),
+      Color(0xFFffc3a0),
+    ]);
+
 const knextgd = RadialGradient(
     // begin: Alignment.centerLeft,
     // end: Alignment.centerRight,
