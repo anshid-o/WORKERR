@@ -399,29 +399,19 @@ class _ScreenPostState extends State<ScreenPost> {
                               padding: const EdgeInsets.all(15.0),
                               child: Column(
                                 children: [
-                                  InkWell(
-                                    onDoubleTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                RequestedPage(),
-                                          ));
-                                    },
-                                    child: const Text(
-                                      "Enter Details",
-                                      // textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        // fontStyle: FontStyle.italic,
-                                        // backgroundColor: kgold,
-                                        color: kc30,
+                                  const Text(
+                                    "Enter Details",
+                                    // textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      // fontStyle: FontStyle.italic,
+                                      // backgroundColor: kgold,
+                                      color: kc30,
 
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w900,
-                                        // decoration: TextDecoration.underline,
-                                        // decorationThickness: 1.3,
-                                        // decorationColor: kred,
-                                      ),
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w900,
+                                      // decoration: TextDecoration.underline,
+                                      // decorationThickness: 1.3,
+                                      // decorationColor: kred,
                                     ),
                                   ),
                                   kheight30,
@@ -561,58 +551,78 @@ class _ScreenPostState extends State<ScreenPost> {
                                     child: Row(
                                       children: [
                                         SizedBox(
-                                          width: size.width * .16,
+                                          width: size.width * .15,
                                         ),
                                         IconButton(
-                                          onPressed: () async {
-                                            await showOptionsDialog(context);
-                                            // print(file!.path);
-                                            if (file != null) {
-                                              String uniqueFileName =
-                                                  DateTime.now()
-                                                      .millisecondsSinceEpoch
-                                                      .toString();
-                                              Reference referenceRoot =
-                                                  FirebaseStorage.instance
-                                                      .ref();
-                                              Reference referenceDirImages =
-                                                  referenceRoot
-                                                      .child('Usersimages');
-                                              Reference referenceImageToUpload =
-                                                  referenceDirImages
-                                                      .child(uniqueFileName);
-                                              i.File f = i.File(file!.path);
-                                              try {
-                                                await referenceImageToUpload
-                                                    .putFile(f);
-                                                imageUrl =
-                                                    await referenceImageToUpload
-                                                        .getDownloadURL();
-                                                if (imageUrl == '') {
-                                                  ProgressIndicator;
+                                            onPressed: () async {
+                                              await showOptionsDialog(context);
+                                              // print(file!.path);
+                                              if (file != null) {
+                                                String uniqueFileName =
+                                                    DateTime.now()
+                                                        .millisecondsSinceEpoch
+                                                        .toString();
+                                                Reference referenceRoot =
+                                                    FirebaseStorage.instance
+                                                        .ref();
+                                                Reference referenceDirImages =
+                                                    referenceRoot
+                                                        .child('Usersimages');
+                                                Reference
+                                                    referenceImageToUpload =
+                                                    referenceDirImages
+                                                        .child(uniqueFileName);
+                                                i.File f = i.File(file!.path);
+                                                try {
+                                                  await referenceImageToUpload
+                                                      .putFile(f);
+                                                  imageUrl =
+                                                      await referenceImageToUpload
+                                                          .getDownloadURL();
+                                                  setState(() {
+                                                    imageUrl = imageUrl;
+                                                  });
+                                                  if (imageUrl == '') {
+                                                    ProgressIndicator;
+                                                  }
+                                                  if (imageUrl.isEmpty) {
+                                                    showDone(
+                                                        context,
+                                                        'Please upload an image',
+                                                        Icons.error,
+                                                        Colors.red);
+                                                  }
+                                                  // firebase
+                                                  //     .collection("Users")
+                                                  //     .doc(user.uid)
+                                                  //     .update({'imageUrl': imageUrl});
+                                                } catch (e) {
+                                                  print(
+                                                      'Error ' + e.toString());
                                                 }
-                                                if (imageUrl.isEmpty) {
-                                                  showDone(
-                                                      context,
-                                                      'Please upload an image',
-                                                      Icons.error,
-                                                      Colors.red);
-                                                }
-                                                // firebase
-                                                //     .collection("Users")
-                                                //     .doc(user.uid)
-                                                //     .update({'imageUrl': imageUrl});
-                                              } catch (e) {
-                                                print('Error ' + e.toString());
                                               }
-                                            }
-                                          },
-                                          icon: Icon(
-                                            Icons.broken_image_outlined,
-                                            size: 40,
-                                            color: kc10.shade700,
-                                          ),
-                                        ),
+                                            },
+                                            icon: imageUrl == ''
+                                                ? Icon(
+                                                    Icons.broken_image_outlined,
+                                                    size: 40,
+                                                    color: kc10.shade700,
+                                                  )
+                                                : Icon(
+                                                    Icons.edit_note,
+                                                    size: 40,
+                                                    color: kc10.shade700,
+                                                  )),
+                                        imageUrl == ''
+                                            ? kwidth
+                                            : IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    imageUrl = '';
+                                                  });
+                                                },
+                                                icon: Icon(Icons.delete)),
+
                                         // IconButton(
                                         //   onPressed: () {},
                                         //   icon: Icon(

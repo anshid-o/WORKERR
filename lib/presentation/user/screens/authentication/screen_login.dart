@@ -53,7 +53,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           'phone': widget.phone,
           'place': widget.pin,
           'status': 'R',
-          'imageUrl': ''
+          'imageUrl': '',
+          'rating': 0,
+          'count': 0
         });
         // print('store');
         var x = FirebaseAuth.instance.currentUser!.email;

@@ -34,53 +34,17 @@ class _ChatScreen2State extends State<ChatScreen2> {
   TextEditingController msg = TextEditingController();
   final auth = FirebaseAuth.instance;
   final storeUser = FirebaseFirestore.instance;
-  List<Message> messages = [
-    // Message(
-    //     text: 'Hi',
-    //     date: DateTime.now().subtract(const Duration(days: 5)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'Hello',
-    //     date: DateTime.now().subtract(const Duration(days: 5)),
-    //     isSentByMe: true),
-    // Message(
-    //     text: 'Can i call you at the moment ?',
-    //     date: DateTime.now().subtract(const Duration(days: 4)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'I want to discuss about your requests',
-    //     date: DateTime.now().subtract(const Duration(days: 4)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'Ok',
-    //     date: DateTime.now().subtract(const Duration(days: 3)),
-    //     isSentByMe: true),
-    // Message(
-    //     text: 'You can call me now',
-    //     date: DateTime.now().subtract(const Duration(days: 3)),
-    //     isSentByMe: true),
-    // Message(
-    //     text: 'ok',
-    //     date: DateTime.now().subtract(const Duration(days: 3)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'Thanks',
-    //     date: DateTime.now().subtract(const Duration(days: 3)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'Hi',
-    //     date: DateTime.now().subtract(const Duration(days: 1)),
-    //     isSentByMe: true),
-    // Message(
-    //     text: 'Hello',
-    //     date: DateTime.now().subtract(const Duration(days: 1)),
-    //     isSentByMe: false),
-    // Message(
-    //     text: 'When will you reach here ?',
-    //     date: DateTime.now().subtract(const Duration(days: 1)),
-    //     isSentByMe: true),
-  ];
-  // .reversed.toList();
+  List<Message> messages = [];
+  int x = 0;
+  @override
+  void initState() {
+    setState(() {
+      x = widget.name.indexOf(' ');
+    });
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +71,7 @@ class _ChatScreen2State extends State<ChatScreen2> {
           ),
           kwidth,
           Text(
-            widget.name,
+            widget.name.substring(0, x),
             style: const TextStyle(
               color: kc60,
               fontSize: 23,

@@ -48,6 +48,7 @@ class WorkCard2 extends StatefulWidget {
   // List<IconData> wicons = [CupertinoIcons.projective];
 
   int stars = 0;
+  bool isCRated = false;
   String selectedStatus = 'Requested';
 
   String selectedItem = 'Choose One';
@@ -87,6 +88,7 @@ class _WorkCard2State extends State<WorkCard2> {
   // }
 
   bool isPressed = false;
+
   FirebaseFirestore firebase = FirebaseFirestore.instance;
   getData() async {
     await firebase
@@ -126,6 +128,12 @@ class _WorkCard2State extends State<WorkCard2> {
         });
       }
     });
+    var w = await firebase.collection('Works').doc(widget.myDoc.id).get();
+    if (mounted) {
+      setState(() {
+        widget.isCRated = w['cRate'];
+      });
+    }
   }
 
   void initState() {
@@ -301,6 +309,34 @@ class _WorkCard2State extends State<WorkCard2> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   kheight,
+                                  widget.isCRated
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Rated',
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                        )
+                                      : ElevatedButton.icon(
+                                          onPressed: () {
+                                            updateStatus(context, document.id);
+                                          },
+                                          style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<
+                                                      RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ))),
+                                          icon: const Icon(Icons.add),
+                                          label: const Text(
+                                            'Rate Client',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ))
                                 ],
                               ),
                       ],
@@ -348,99 +384,567 @@ class _WorkCard2State extends State<WorkCard2> {
                     padding: const EdgeInsets.all(16),
 
                     // wrap with GlassText
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            const Text(
-                              'Choose Status :',
-                              style: TextStyle(
-                                  color: kc30,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            ksize(y: 8),
-                            SizedBox(
-                              width: 200,
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                            width: 4, color: kblue3))),
-                                value: widget.selectedStatus,
-                                items: widget.status
-                                    .map(
-                                      (item) => DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Text(
-                                          item,
-                                          style: const TextStyle(fontSize: 15),
-                                        ),
+                    child: widget.isClient
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Choose Status :',
+                                    style: TextStyle(
+                                        color: kc30,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  ksize(y: 8),
+                                  SizedBox(
+                                    width: 200,
+                                    child: DropdownButtonFormField<String>(
+                                      decoration: InputDecoration(
+                                          enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: const BorderSide(
+                                                  width: 4, color: kblue3))),
+                                      value: widget.selectedStatus,
+                                      items: widget.status
+                                          .map(
+                                            (item) => DropdownMenuItem<String>(
+                                              value: item,
+                                              child: Text(
+                                                item,
+                                                style: const TextStyle(
+                                                    fontSize: 15),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: (item) {
+                                        if (mounted) {
+                                          setState(() {
+                                            widget.selectedStatus = item!;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                              kheight,
+                              if (widget.selectedStatus != 'Requested')
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Choose Worker :',
+                                      style: TextStyle(
+                                          color: kc30,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    ksize(y: 3),
+                                    SizedBox(
+                                      width: 200,
+                                      child: DropdownButtonFormField<String>(
+                                        decoration: InputDecoration(
+                                            enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    width: 4, color: kblue3))),
+                                        value: widget.selectedItem,
+                                        items: widget.workers
+                                            .map(
+                                              (item) =>
+                                                  DropdownMenuItem<String>(
+                                                value: item,
+                                                child: Text(
+                                                  item,
+                                                  style: const TextStyle(
+                                                      fontSize: 15),
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (item) {
+                                          if (mounted) {
+                                            setState(() {
+                                              widget.selectedItem = item!;
+                                            });
+                                          }
+                                        },
                                       ),
                                     )
-                                    .toList(),
-                                onChanged: (item) {
-                                  if (mounted) {
-                                    setState(() {
-                                      widget.selectedStatus = item!;
-                                    });
-                                  }
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                        kheight,
-                        if (widget.selectedStatus != 'Requested')
-                          Row(
-                            children: [
-                              const Text(
-                                'Choose Worker :',
-                                style: TextStyle(
-                                    color: kc30,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              ksize(y: 3),
-                              SizedBox(
-                                width: 200,
-                                child: DropdownButtonFormField<String>(
-                                  decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          borderSide: const BorderSide(
-                                              width: 4, color: kblue3))),
-                                  value: widget.selectedItem,
-                                  items: widget.workers
-                                      .map(
-                                        (item) => DropdownMenuItem<String>(
-                                          value: item,
-                                          child: Text(
-                                            item,
-                                            style:
-                                                const TextStyle(fontSize: 15),
+                                  ],
+                                ),
+                              kheight,
+                              if (widget.selectedStatus == 'Completed')
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          'Rate :',
+                                          style: TextStyle(
+                                              color: kc30,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Spacer(),
+                                        IconButton(
+                                            onPressed: () {
+                                              if (mounted) {
+                                                setState(() {
+                                                  widget.stars = 1;
+                                                });
+                                              }
+                                            },
+                                            icon: widget.stars > 0
+                                                ? const Icon(
+                                                    Icons.star,
+                                                    size: 25,
+                                                    color: kgold,
+                                                    shadows: kshadow2,
+                                                  )
+                                                : const Icon(
+                                                    Icons.star_border,
+                                                    size: 25,
+                                                    color: Colors.grey,
+                                                  )),
+                                        IconButton(
+                                            onPressed: () {
+                                              if (mounted) {
+                                                setState(() {
+                                                  widget.stars = 2;
+                                                });
+                                              }
+                                            },
+                                            icon: widget.stars > 1
+                                                ? const Icon(
+                                                    Icons.star,
+                                                    size: 25,
+                                                    color: kgold,
+                                                    shadows: kshadow2,
+                                                  )
+                                                : const Icon(
+                                                    Icons.star_border,
+                                                    size: 25,
+                                                    color: Colors.grey,
+                                                  )),
+                                        IconButton(
+                                            onPressed: () {
+                                              if (mounted) {
+                                                setState(() {
+                                                  widget.stars = 3;
+                                                });
+                                              }
+                                            },
+                                            icon: widget.stars > 2
+                                                ? const Icon(
+                                                    Icons.star,
+                                                    size: 25,
+                                                    color: kgold,
+                                                    shadows: kshadow2,
+                                                  )
+                                                : const Icon(
+                                                    Icons.star_border,
+                                                    size: 25,
+                                                    color: Colors.grey,
+                                                  )),
+                                        IconButton(
+                                            onPressed: () {
+                                              if (mounted) {
+                                                setState(() {
+                                                  widget.stars = 4;
+                                                });
+                                              }
+                                            },
+                                            icon: widget.stars > 3
+                                                ? const Icon(
+                                                    Icons.star,
+                                                    size: 25,
+                                                    color: kgold,
+                                                    shadows: kshadow2,
+                                                  )
+                                                : const Icon(
+                                                    Icons.star_border,
+                                                    size: 25,
+                                                    color: Colors.grey,
+                                                  )),
+                                        IconButton(
+                                            onPressed: () {
+                                              if (mounted) {
+                                                setState(() {
+                                                  widget.stars = 5;
+                                                });
+                                              }
+                                            },
+                                            icon: widget.stars > 4
+                                                ? const Icon(
+                                                    Icons.star,
+                                                    size: 25,
+                                                    color: kgold,
+                                                    shadows: kshadow2,
+                                                  )
+                                                : const Icon(
+                                                    Icons.star_border,
+                                                    size: 25,
+                                                    color: Colors.grey,
+                                                  )),
+                                      ],
+                                    ),
+                                    kheight,
+                                  ],
+                                ),
+                              kheight,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  if (widget.selectedStatus == 'Completed')
+                                    ElevatedButton.icon(
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                  'Tell about Worker',
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                content: TextFormField(
+                                                  controller: widget.kreview,
+                                                  minLines: 3,
+                                                  maxLines: 5,
+                                                  decoration: InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20)),
+                                                      label: const Text(
+                                                          'Enter review')),
+                                                ),
+                                                actions: [
+                                                  ElevatedButton.icon(
+                                                      style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all(Colors
+                                                                      .green)),
+                                                      onPressed: () {
+                                                        if (mounted) {
+                                                          setState(() {
+                                                            widget.review =
+                                                                widget.kreview
+                                                                    .text;
+                                                          });
+                                                        }
+                                                        Navigator.pop(context);
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.done),
+                                                      label: const Text('Add')),
+                                                  ElevatedButton.icon(
+                                                      style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all(Colors
+                                                                      .red)),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        // updateStatus(context);
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.close),
+                                                      label: const Text(
+                                                          'Discard')),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: widget.review == ''
+                                            ? const Icon(Icons.reviews)
+                                            : const Icon(Icons.done),
+                                        label: const Text('Add review')),
+                                  Container(
+                                    width: 115,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                        color: kc10,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Center(
+                                      child: TextButton(
+                                        onHover: (hovered) {
+                                          if (mounted) {
+                                            setState(() {
+                                              isPressed = hovered;
+                                            });
+                                          }
+                                        },
+                                        style: TextButton.styleFrom(
+                                            side: const BorderSide(
+                                                color: Colors.white, width: 3),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10))),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          // await Future.delayed(const Duration(milliseconds: 800));
+                                          widget.workers.length > 1
+                                              ? showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20.0)),
+                                                      title:
+                                                          const Text('Remider'),
+                                                      contentPadding:
+                                                          const EdgeInsets.all(
+                                                              20),
+                                                      content: const Text(
+                                                          'Are you sure, you want to update the status ?'),
+                                                      actionsAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      actions: [
+                                                        ElevatedButton.icon(
+                                                            style: ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty
+                                                                        .all(Colors
+                                                                            .green)),
+                                                            onPressed: () {
+                                                              final user =
+                                                                  FirebaseAuth
+                                                                      .instance
+                                                                      .currentUser!;
+
+                                                              for (int i = 0;
+                                                                  i <
+                                                                      widget
+                                                                          .workers
+                                                                          .length;
+                                                                  i++) {
+                                                                if (widget.workers[
+                                                                        i] ==
+                                                                    widget
+                                                                        .selectedItem) {
+                                                                  inx = i - 1;
+                                                                }
+                                                              }
+
+                                                              double xp = double.parse(((widget.workersRating[inx] *
+                                                                              widget.workersCount[
+                                                                                  inx] +
+                                                                          widget
+                                                                              .stars) /
+                                                                      (widget.workersCount[
+                                                                              inx] +
+                                                                          1))
+                                                                  .toDouble()
+                                                                  .toStringAsPrecision(
+                                                                      2));
+                                                              if (widget
+                                                                      .selectedStatus ==
+                                                                  'Accepted') {
+                                                                firebase
+                                                                    .collection(
+                                                                        "Works")
+                                                                    .doc(id)
+                                                                    .update({
+                                                                  'status': widget
+                                                                      .selectedStatus,
+                                                                  'worker': widget
+                                                                      .selectedItem,
+                                                                  'wid': widget
+                                                                          .workersId[
+                                                                      inx],
+                                                                });
+                                                              }
+
+                                                              if (widget
+                                                                      .selectedStatus ==
+                                                                  'Completed') {
+                                                                firebase
+                                                                    .collection(
+                                                                        "Workers")
+                                                                    .doc(widget
+                                                                            .workersId[
+                                                                        inx])
+                                                                    .update({
+                                                                  'rating': xp,
+                                                                  'count': FieldValue
+                                                                      .increment(
+                                                                          1),
+                                                                });
+                                                                firebase
+                                                                    .collection(
+                                                                        'Reviews')
+                                                                    .doc()
+                                                                    .set({
+                                                                  'uid':
+                                                                      user.uid,
+                                                                  'wid': widget
+                                                                      .myDoc.id,
+                                                                  'review': widget
+                                                                      .review,
+                                                                  'time':
+                                                                      DateTime
+                                                                          .now()
+                                                                });
+                                                                firebase
+                                                                    .collection(
+                                                                        "Works")
+                                                                    .doc(id)
+                                                                    .update({
+                                                                  'status': widget
+                                                                      .selectedStatus,
+                                                                  'worker': widget
+                                                                      .selectedItem,
+                                                                  'wid': widget
+                                                                          .workersId[
+                                                                      inx],
+                                                                  'rating':
+                                                                      widget
+                                                                          .stars,
+                                                                  'review':
+                                                                      widget
+                                                                          .review
+                                                                });
+                                                                firebase
+                                                                    .collection(
+                                                                        'Requests')
+                                                                    .get()
+                                                                    .then(
+                                                                        (querySnapshot) {
+                                                                  querySnapshot
+                                                                      .docs
+                                                                      .forEach(
+                                                                          (document) {
+                                                                    if (document[
+                                                                            'id'] ==
+                                                                        id) {
+                                                                      document
+                                                                          .reference
+                                                                          .update({
+                                                                        'rating':
+                                                                            xp,
+                                                                        'count':
+                                                                            FieldValue.increment(1)
+                                                                      });
+                                                                    }
+                                                                  });
+                                                                });
+
+                                                                widget.workersCount[
+                                                                        inx] =
+                                                                    widget.workersCount[
+                                                                            inx] +
+                                                                        1;
+                                                                widget.workersRating[
+                                                                    inx] = xp;
+                                                              }
+
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons.done),
+                                                            label: const Text(
+                                                                'Yes')),
+                                                        ElevatedButton.icon(
+                                                            style: ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty
+                                                                        .all(Colors
+                                                                            .red)),
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              updateStatus(
+                                                                  context,
+                                                                  widget.myDoc
+                                                                      .id);
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons.close),
+                                                            label: const Text(
+                                                                'No')),
+                                                      ],
+                                                    );
+                                                  },
+                                                )
+                                              : showDone(
+                                                  context,
+                                                  'please choose a worker',
+                                                  Icons.error,
+                                                  Colors.red);
+                                        },
+                                        onLongPress: () {
+                                          // Navigator.pop(context);
+                                        },
+                                        child: Listener(
+                                          onPointerDown: (event) {
+                                            if (mounted) {
+                                              setState(() {
+                                                isPressed = true;
+                                              });
+                                            }
+                                          },
+                                          onPointerUp: (event) {
+                                            if (mounted) {
+                                              setState(() {
+                                                isPressed = false;
+                                              });
+                                            }
+                                          },
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 30,
+                                            child: Center(
+                                              child: Text(
+                                                'Update',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20,
+                                                  shadows: [
+                                                    for (double i = 1;
+                                                        i <
+                                                            (isPressed
+                                                                ? 10
+                                                                : 6);
+                                                        i++)
+                                                      const Shadow(
+                                                        color: kshadowColor,
+                                                        blurRadius: 3,
+                                                      )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      )
-                                      .toList(),
-                                  onChanged: (item) {
-                                    if (mounted) {
-                                      setState(() {
-                                        widget.selectedItem = item!;
-                                      });
-                                    }
-                                  },
-                                ),
-                              )
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
-                          ),
-                        kheight,
-                        if (widget.selectedStatus == 'Completed')
-                          Column(
+                          )
+                        : Column(
                             children: [
                               Row(
                                 children: [
@@ -555,311 +1059,47 @@ class _WorkCard2State extends State<WorkCard2> {
                                 ],
                               ),
                               kheight,
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    var a = await firebase
+                                        .collection('Users')
+                                        .doc(id)
+                                        .get();
+                                    var crate = a['rating'];
+                                    var ccount = a['count'];
+                                    var xp = double.parse(
+                                        ((crate * ccount + widget.stars) /
+                                                (ccount + 1))
+                                            .toDouble()
+                                            .toStringAsPrecision(2));
+                                    firebase
+                                        .collection('Users')
+                                        .doc(id)
+                                        .update({
+                                      'count': FieldValue.increment(1),
+                                      'rating': xp,
+                                    });
+                                    firebase
+                                        .collection('Works')
+                                        .doc(widget.myDoc.id)
+                                        .update({'cRate': true});
+                                    Navigator.pop(context);
+                                    showDone(context, 'Rated successfully',
+                                        Icons.done, Colors.green);
+                                  },
+                                  style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ))),
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    child: Text('Rate'),
+                                  ))
                             ],
                           ),
-                        kheight,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            if (widget.selectedStatus == 'Completed')
-                              ElevatedButton.icon(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text(
-                                            'Tell about Worker',
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          content: TextFormField(
-                                            controller: widget.kreview,
-                                            minLines: 3,
-                                            maxLines: 5,
-                                            decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20)),
-                                                label:
-                                                    const Text('Enter review')),
-                                          ),
-                                          actions: [
-                                            ElevatedButton.icon(
-                                                style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(Colors.green)),
-                                                onPressed: () {
-                                                  if (mounted) {
-                                                    setState(() {
-                                                      widget.review =
-                                                          widget.kreview.text;
-                                                    });
-                                                  }
-                                                  Navigator.pop(context);
-                                                },
-                                                icon: const Icon(Icons.done),
-                                                label: const Text('Add')),
-                                            ElevatedButton.icon(
-                                                style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(Colors.red)),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  // updateStatus(context);
-                                                },
-                                                icon: const Icon(Icons.close),
-                                                label: const Text('Discard')),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: widget.review == ''
-                                      ? const Icon(Icons.reviews)
-                                      : const Icon(Icons.done),
-                                  label: const Text('Add review')),
-                            Container(
-                              width: 115,
-                              height: 45,
-                              decoration: BoxDecoration(
-                                  color: kc10,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Center(
-                                child: TextButton(
-                                  onHover: (hovered) {
-                                    if (mounted) {
-                                      setState(() {
-                                        isPressed = hovered;
-                                      });
-                                    }
-                                  },
-                                  style: TextButton.styleFrom(
-                                      side: const BorderSide(
-                                          color: Colors.white, width: 3),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10))),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    // await Future.delayed(const Duration(milliseconds: 800));
-                                    widget.workers.length > 1
-                                        ? showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20.0)),
-                                                title: const Text('Remider'),
-                                                contentPadding:
-                                                    const EdgeInsets.all(20),
-                                                content: const Text(
-                                                    'Are you sure, you want to update the status ?'),
-                                                actionsAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                actions: [
-                                                  ElevatedButton.icon(
-                                                      style: ButtonStyle(
-                                                          backgroundColor:
-                                                              MaterialStateProperty
-                                                                  .all(Colors
-                                                                      .green)),
-                                                      onPressed: () {
-                                                        final user =
-                                                            FirebaseAuth
-                                                                .instance
-                                                                .currentUser!;
-
-                                                        for (int i = 0;
-                                                            i <
-                                                                widget.workers
-                                                                    .length;
-                                                            i++) {
-                                                          if (widget
-                                                                  .workers[i] ==
-                                                              widget
-                                                                  .selectedItem) {
-                                                            inx = i - 1;
-                                                          }
-                                                        }
-
-                                                        double xp = double.parse(((widget.workersRating[
-                                                                            inx] *
-                                                                        widget.workersCount[
-                                                                            inx] +
-                                                                    widget
-                                                                        .stars) /
-                                                                (widget.workersCount[
-                                                                        inx] +
-                                                                    1))
-                                                            .toDouble()
-                                                            .toStringAsPrecision(
-                                                                2));
-                                                        if (widget
-                                                                .selectedStatus ==
-                                                            'Accepted') {
-                                                          firebase
-                                                              .collection(
-                                                                  "Works")
-                                                              .doc(id)
-                                                              .update({
-                                                            'status': widget
-                                                                .selectedStatus,
-                                                            'worker': widget
-                                                                .selectedItem,
-                                                            'wid': widget
-                                                                .workersId[inx],
-                                                          });
-                                                        }
-
-                                                        if (widget
-                                                                .selectedStatus ==
-                                                            'Completed') {
-                                                          firebase
-                                                              .collection(
-                                                                  "Workers")
-                                                              .doc(widget
-                                                                      .workersId[
-                                                                  inx])
-                                                              .update({
-                                                            'rating': xp,
-                                                            'count': FieldValue
-                                                                .increment(1),
-                                                          });
-                                                          firebase
-                                                              .collection(
-                                                                  "Works")
-                                                              .doc(id)
-                                                              .update({
-                                                            'status': widget
-                                                                .selectedStatus,
-                                                            'worker': widget
-                                                                .selectedItem,
-                                                            'wid': widget
-                                                                .workersId[inx],
-                                                            'rating':
-                                                                widget.stars,
-                                                            'review':
-                                                                widget.review
-                                                          });
-                                                          firebase
-                                                              .collection(
-                                                                  'Requests')
-                                                              .get()
-                                                              .then(
-                                                                  (querySnapshot) {
-                                                            querySnapshot.docs
-                                                                .forEach(
-                                                                    (document) {
-                                                              if (document[
-                                                                      'id'] ==
-                                                                  id) {
-                                                                document
-                                                                    .reference
-                                                                    .update({
-                                                                  'rating': xp,
-                                                                  'count':
-                                                                      FieldValue
-                                                                          .increment(
-                                                                              1)
-                                                                });
-                                                              }
-                                                            });
-                                                          });
-
-                                                          widget.workersCount[
-                                                                  inx] =
-                                                              widget.workersCount[
-                                                                      inx] +
-                                                                  1;
-                                                          widget.workersRating[
-                                                              inx] = xp;
-                                                        }
-
-                                                        Navigator.pop(context);
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.done),
-                                                      label: const Text('Yes')),
-                                                  ElevatedButton.icon(
-                                                      style: ButtonStyle(
-                                                          backgroundColor:
-                                                              MaterialStateProperty
-                                                                  .all(Colors
-                                                                      .red)),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        updateStatus(context,
-                                                            widget.myDoc.id);
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.close),
-                                                      label: const Text('No')),
-                                                ],
-                                              );
-                                            },
-                                          )
-                                        : showDone(
-                                            context,
-                                            'please choose a worker',
-                                            Icons.error,
-                                            Colors.red);
-                                  },
-                                  onLongPress: () {
-                                    // Navigator.pop(context);
-                                  },
-                                  child: Listener(
-                                    onPointerDown: (event) {
-                                      if (mounted) {
-                                        setState(() {
-                                          isPressed = true;
-                                        });
-                                      }
-                                    },
-                                    onPointerUp: (event) {
-                                      if (mounted) {
-                                        setState(() {
-                                          isPressed = false;
-                                        });
-                                      }
-                                    },
-                                    child: SizedBox(
-                                      width: 100,
-                                      height: 30,
-                                      child: Center(
-                                        child: Text(
-                                          'Update',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            shadows: [
-                                              for (double i = 1;
-                                                  i < (isPressed ? 10 : 6);
-                                                  i++)
-                                                const Shadow(
-                                                  color: kshadowColor,
-                                                  blurRadius: 3,
-                                                )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               );

@@ -145,6 +145,18 @@ class _RequestCard2State extends State<RequestCard2> {
                               ),
                             ),
                             kheight,
+                            Text(
+                              // snapshot.data!.docs.contains('place')
+                              //     ?
+                              'Rating :${document['rating']} ( Count :${document['count']})',
+                              // : 'From :${document['pin']}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: kc30,
+                              ),
+                            ),
+                            kheight,
                             if (widget.myDoc['status'] == 'Requested')
                               Row(
                                 mainAxisAlignment:

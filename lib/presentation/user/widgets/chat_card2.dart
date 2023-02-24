@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 // import 'package:flutter/src/foundation/key.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 import 'package:workerr_app/core/colors.dart';
@@ -10,19 +12,61 @@ import 'package:workerr_app/presentation/user/screens/main/chat/chat_screen_chil
 import 'package:workerr_app/presentation/user/screens/main/chat/widgets/chat_screen2.dart';
 import 'package:workerr_app/presentation/user/widgets/user_details.dart';
 
-class ChatCard2 extends StatelessWidget {
+class ChatCard2 extends StatefulWidget {
   String uid;
   int index;
   ChatCard2({Key? key, required this.uid, required this.index})
       : super(key: key);
+
+  @override
+  State<ChatCard2> createState() => _ChatCard2State();
+}
+
+class _ChatCard2State extends State<ChatCard2> {
   final storeUser = FirebaseFirestore.instance;
+  String formatter = '';
+  Timestamp time = Timestamp.fromDate(DateTime.fromMillisecondsSinceEpoch(0));
+  getData() async {
+    var a = await storeUser.collection('Messages').get();
+    a.docs.forEach((element) {
+      if (element['to'] == FirebaseAuth.instance.currentUser!.uid &&
+          element['from'] == widget.uid) {
+        if (mounted && time.compareTo(element['time']) < 0) {
+          setState(() {
+            time = element['time'];
+          });
+        }
+      }
+      if (element['from'] == FirebaseAuth.instance.currentUser!.uid &&
+          element['to'] == widget.uid) {
+        if (mounted && time.compareTo(element['time']) < 0) {
+          setState(() {
+            time = element['time'];
+          });
+        }
+      }
+    });
+    if (mounted) {
+      setState(() {
+        formatter = DateFormat('yMd').format(
+            DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: storeUser
           .collection("Users")
-          .where("uid", isEqualTo: uid)
+          .where("uid", isEqualTo: widget.uid)
           .snapshots(),
       // .where({"status", "is", "Requested"}).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -70,16 +114,16 @@ class ChatCard2 extends StatelessWidget {
                                       builder: (context) => UserDetails(
                                         name: document['name'],
                                         img: image,
-                                        index: index,
+                                        index: widget.index,
                                       ),
                                     ));
                               },
                               child: Hero(
-                                  tag: 'image_chat$index',
+                                  tag: 'image_chat${widget.index}',
                                   child: biuldImage(image))),
 
                           subtitle: Text(
-                            '${(index + 4) * 2}/${index + 1}/2021',
+                            formatter == '' ? 'XX/XX/XXXX' : formatter,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
@@ -102,31 +146,10 @@ class ChatCard2 extends StatelessWidget {
                             color: kc10,
                             iconSize: 30,
                           ),
-                          // children: const [
-                          //   Padding(
-                          //     padding: EdgeInsets.all(8.0),
-                          //     child: Text(
-                          //       'Hello, I am intrested to do the plumbing work.\nCan you call me when you are free ?',
-                          //       textAlign: TextAlign.left,
-                          //       style: TextStyle(
-                          //           color: Colors.black,
-                          //           fontSize: 14,
-                          //           fontWeight: FontWeight.bold),
-                          //     ),
-                          //   ),
-                          // ],
                         ),
                       ),
                     ),
                   )
-
-                //  WorkCard2(
-                //   index: index,
-                //   date: document['date'],
-                //   work: document['work'],
-                //   details: document['details'],
-                // );
-
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
                     child: Container(

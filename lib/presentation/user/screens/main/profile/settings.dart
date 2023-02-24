@@ -138,14 +138,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   var x = FirebaseAuth.instance.currentUser!.email;
                   if (x != null) {
                     FirebaseAuth.instance.currentUser!.delete();
-                    FirebaseFirestore.instance
-                        .collection('Users')
-                        .doc('${FirebaseAuth.instance.currentUser!.uid}')
-                        .delete();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                        (route) => false);
+                    // FirebaseFirestore.instance
+                    //     .collection('Users')
+                    //     .doc('${FirebaseAuth.instance.currentUser!.uid}')
+                    //     .delete();
+                    // Navigator.pushAndRemoveUntil(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context) => Login()),
+                    //     (route) => false);
                   }
                 } catch (e) {
                   print(e.toString());
