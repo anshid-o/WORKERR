@@ -78,41 +78,43 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
 
   getStream() {
     if (widget.tick) {
-      if (widget.dis == 0) {
-        if (widget.pi == 0) {
-          return widget.firebase
-              .collection("Workers")
-              .where('rating', isLessThanOrEqualTo: widget.rt)
-              .where('uid', whereIn: widget.widList)
-              .where('job', isEqualTo: widget.work)
-              .snapshots();
+      if (widget.widList.isNotEmpty) {
+        if (widget.dis == 0) {
+          if (widget.pi == 0) {
+            return widget.firebase
+                .collection("Workers")
+                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('uid', whereIn: widget.widList)
+                .where('job', isEqualTo: widget.work)
+                .snapshots();
+          } else {
+            return widget.firebase
+                .collection("Workers")
+                .where('pin', isEqualTo: widget.pinCodes[widget.pi])
+                .where('uid', whereIn: widget.widList)
+                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('job', isEqualTo: widget.work)
+                .snapshots();
+          }
         } else {
-          return widget.firebase
-              .collection("Workers")
-              .where('pin', isEqualTo: widget.pinCodes[widget.pi])
-              .where('uid', whereIn: widget.widList)
-              .where('rating', isLessThanOrEqualTo: widget.rt)
-              .where('job', isEqualTo: widget.work)
-              .snapshots();
-        }
-      } else {
-        if (widget.pi == 0) {
-          return widget.firebase
-              .collection("Workers")
-              .where('district', isEqualTo: widget.districts[widget.dis])
-              .where('uid', whereIn: widget.widList)
-              .where('rating', isLessThanOrEqualTo: widget.rt)
-              .where('job', isEqualTo: widget.work)
-              .snapshots();
-        } else {
-          return widget.firebase
-              .collection("Workers")
-              .where('pin', isEqualTo: widget.pinCodes[widget.pi])
-              .where('district', isEqualTo: widget.districts[widget.dis])
-              .where('uid', whereIn: widget.widList)
-              .where('rating', isLessThanOrEqualTo: widget.rt)
-              .where('job', isEqualTo: widget.work)
-              .snapshots();
+          if (widget.pi == 0) {
+            return widget.firebase
+                .collection("Workers")
+                .where('district', isEqualTo: widget.districts[widget.dis])
+                .where('uid', whereIn: widget.widList)
+                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('job', isEqualTo: widget.work)
+                .snapshots();
+          } else {
+            return widget.firebase
+                .collection("Workers")
+                .where('pin', isEqualTo: widget.pinCodes[widget.pi])
+                .where('district', isEqualTo: widget.districts[widget.dis])
+                .where('uid', whereIn: widget.widList)
+                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('job', isEqualTo: widget.work)
+                .snapshots();
+          }
         }
       }
     } else {
@@ -239,6 +241,14 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                 );
 
               default:
+                // int length = snapshot.data!.docs.length;
+                // bool checkFlag = false;
+                // for (var element in snapshot.data!.docs) {
+                //   if (element['uid'] ==
+                //       FirebaseAuth.instance.currentUser!.uid) {
+                //     checkFlag = true;
+                //   }
+                // }
                 return snapshot.data!.docs.isNotEmpty
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,22 +482,26 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                             ),
                           ),
                           Expanded(
-                              child: ListView.builder(
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    DocumentSnapshot document =
-                                        snapshot.data!.docs[index];
-                                    return BuildList(
-                                      myDoc: document,
-                                      rating: double.parse(
-                                          document['rating'].toString()),
-                                      id: widget.id,
-                                      det: widget.details,
-                                      isdec: widget.isDescending,
-                                      work: widget.work,
-                                    );
-                                  })),
+                            child: ListView.builder(
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  DocumentSnapshot document =
+                                      snapshot.data!.docs[index];
+                                  return document['uid'] !=
+                                          FirebaseAuth.instance.currentUser!.uid
+                                      ? BuildList(
+                                          index: index,
+                                          myDoc: document,
+                                          rating: double.parse(
+                                              document['rating'].toString()),
+                                          id: widget.id,
+                                          det: widget.details,
+                                          isdec: widget.isDescending,
+                                          work: widget.work,
+                                        )
+                                      : Center();
+                                }),
+                          ),
                           Center(
                             child: Container(
                               width: 250,
@@ -497,13 +511,6 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                                   gradient: kc30gd),
                               child: Center(
                                 child: TextButton(
-                                  onHover: (hovered) {
-                                    if (mounted) {
-                                      setState(() {
-                                        widget.isPressed = hovered;
-                                      });
-                                    }
-                                  },
                                   style: TextButton.styleFrom(
                                       side: const BorderSide(
                                           color: kc60, width: 3),
@@ -511,42 +518,46 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                                           borderRadius:
                                               BorderRadius.circular(10))),
                                   onPressed: () {
+                                    showDone(
+                                        context,
+                                        'work successfully posted',
+                                        Icons.done,
+                                        Colors.green);
                                     Navigator.pop(context);
                                   },
-                                  onLongPress: () {
-                                    // Navigator.pop(context);
-                                  },
-                                  child: Listener(
-                                    onPointerDown: (event) {
-                                      if (mounted) {
-                                        setState(() {
-                                          widget.isPressed = true;
-                                        });
-                                      }
-                                    },
-                                    onPointerUp: (event) {
-                                      if (mounted) {
-                                        setState(() {
-                                          widget.isPressed = false;
-                                        });
-                                      }
-                                    },
-                                    child: Center(
-                                      child: Text(
-                                        'Done',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          shadows: [
-                                            for (double i = 1;
-                                                i < (widget.isPressed ? 10 : 6);
-                                                i++)
-                                              const Shadow(
-                                                color: kshadowColor,
-                                                blurRadius: 3,
-                                              )
-                                          ],
-                                        ),
+                                  // onLongPress: () {
+                                  //   // Navigator.pop(context);
+                                  // },
+                                  // child: Listener(
+                                  //   onPointerDown: (event) {
+                                  //     if (mounted) {
+                                  //       setState(() {
+                                  //         widget.isPressed = true;
+                                  //       });
+                                  //     }
+                                  //   },
+                                  //   onPointerUp: (event) {
+                                  //     if (mounted) {
+                                  //       setState(() {
+                                  //         widget.isPressed = false;
+                                  //       });
+                                  //     }
+                                  //   },
+                                  child: Center(
+                                    child: Text(
+                                      'Done',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        shadows: [
+                                          for (double i = 1;
+                                              i < (widget.isPressed ? 10 : 6);
+                                              i++)
+                                            const Shadow(
+                                              color: kshadowColor,
+                                              blurRadius: 3,
+                                            )
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -554,6 +565,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                               ),
                             ),
                           ),
+                          // ),
                         ],
                       )
                     : Column(

@@ -8,11 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dart';
+import 'package:workerr_app/presentation/user/widgets/view_workers.dart';
 
 class BuildList extends StatefulWidget {
   DocumentSnapshot myDoc;
   // String uid;
   double rating;
+  int index;
   // String name;
   String work;
   String id;
@@ -23,6 +25,7 @@ class BuildList extends StatefulWidget {
   bool isdec;
   BuildList(
       {Key? key,
+      required this.index,
       required this.myDoc,
       required this.rating,
       required this.id,
@@ -37,12 +40,58 @@ class BuildList extends StatefulWidget {
 
 class _BuildListState extends State<BuildList> {
   bool pressed = false;
+  String name = '';
+  String url = '';
+  Map<String, dynamic> userPostDoc = {};
+  Map<String, dynamic> workerPostDoc = {};
+
+  ImageProvider image = const AssetImage('assets/persons/althaf.jpg');
+
+  getUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    final userData =
+        FirebaseFirestore.instance.collection("Users").doc(widget.myDoc['uid']);
+    final workerData = FirebaseFirestore.instance
+        .collection("Workers")
+        .doc(widget.myDoc['uid']);
+    userData.get().then((us) {
+      if (us.exists && mounted) {
+        // The document exists
+        final userDoc = us.data();
+
+        // You can now access the values stored in the document
+
+        setState(() {
+          name = userDoc!['name'];
+          url = userDoc['imageUrl'];
+          userPostDoc = userDoc;
+          image = url == ''
+              ? const AssetImage('assets/persons/default.jpg')
+              : NetworkImage(url) as ImageProvider;
+        });
+      }
+    });
+    workerData.get().then((us) {
+      if (us.exists && mounted) {
+        // The document exists
+        final userDoc = us.data();
+
+        // You can now access the values stored in the document
+
+        setState(() {
+          workerPostDoc = userDoc!;
+        });
+      }
+    });
+  }
 
   // IconData icon = Icons.send_outlined;
   FirebaseFirestore firebase = FirebaseFirestore.instance;
 
   final storeUser = FirebaseFirestore.instance;
   void initState() {
+    getUserData();
     // TODO: implement initState
     final user = FirebaseAuth.instance.currentUser;
     final documentReference = FirebaseFirestore.instance
@@ -123,7 +172,21 @@ class _BuildListState extends State<BuildList> {
                         ),
                         title: Row(
                           children: [
-                            Text(document['name']),
+                            GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ViewWorkers(
+                                                page: 'post',
+                                                name: name,
+                                                myPDoc: workerPostDoc,
+                                                myDoc: userPostDoc,
+                                                img: image,
+                                                index: widget.index,
+                                              )));
+                                },
+                                child: Text(document['name'])),
                             const Spacer(),
                             Text('⭐ ${widget.rating}'),
                           ],

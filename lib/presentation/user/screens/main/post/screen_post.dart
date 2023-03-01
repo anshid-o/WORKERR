@@ -20,8 +20,8 @@ import 'package:workerr_app/presentation/user/screens/main/post/show_workers.dar
 import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
 class ScreenPost extends StatefulWidget {
-  const ScreenPost({Key? key}) : super(key: key);
-
+  ScreenPost({Key? key}) : super(key: key);
+  int count = -1;
   @override
   State<ScreenPost> createState() => _ScreenPostState();
 }
@@ -31,7 +31,7 @@ class _ScreenPostState extends State<ScreenPost> {
   TextEditingController pdet = TextEditingController();
   XFile? file;
   String imageUrl = '';
-  int count = -1;
+
   List<String> works = [
     'Plumbing',
     'Painting',
@@ -49,7 +49,7 @@ class _ScreenPostState extends State<ScreenPost> {
       for (var element in a.docs) {
         if (element['uid'] == FirebaseAuth.instance.currentUser!.uid) {
           setState(() {
-            count = 1;
+            widget.count = 1;
           });
         }
       }
@@ -102,15 +102,17 @@ class _ScreenPostState extends State<ScreenPost> {
                 ),
                 kwidth
               ],
-              bottom: const TabBar(
+              bottom: TabBar(
                 tabs: [
-                  Tab(
+                  const Tab(
                     text: 'Request work',
                     icon: Icon(Icons.work),
                   ),
                   Tab(
                     text: 'Post work',
-                    icon: Icon(Icons.workspace_premium),
+                    icon: widget.count == 1
+                        ? const Icon(Icons.workspace_premium)
+                        : const Icon(Icons.lock),
                   )
                 ],
                 indicatorColor: kc10,
@@ -374,7 +376,7 @@ class _ScreenPostState extends State<ScreenPost> {
                   ],
                 ),
               ),
-              count == 1
+              widget.count == 1
                   ? SingleChildScrollView(
                       child: Column(
                         children: [

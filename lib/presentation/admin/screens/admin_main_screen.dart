@@ -2,6 +2,7 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:workerr_app/core/colors.dart';
+import 'package:workerr_app/presentation/admin/screens/Manage/manage.dart';
 import 'package:workerr_app/presentation/admin/screens/feedback/admin_feedback.dart';
 import 'package:workerr_app/presentation/admin/screens/home/admin_home.dart';
 // import 'package:workerr_app/presentation/admin/screens/home/admin_home.dart';
@@ -48,6 +49,15 @@ class _AdminScreenMainState extends State<AdminScreenMain> {
           textAlign: TextAlign.center,
           inactiveColor: Colors.grey,
           icon: const Icon(
+            Icons.manage_accounts,
+          ),
+          title: const Text('Manage'),
+        ),
+        BottomNavyBarItem(
+          activeColor: kc10,
+          textAlign: TextAlign.center,
+          inactiveColor: Colors.grey,
+          icon: const Icon(
             Icons.report_problem,
           ),
           title: const Text('Reports'),
@@ -82,10 +92,12 @@ class _AdminScreenMainState extends State<AdminScreenMain> {
   Widget buildAdminPages() {
     switch (index) {
       case 1:
-        return AdminReportScreen();
+        return const ManageUsers();
       case 2:
-        return AdminFeedback();
+        return AdminReportScreen();
       case 3:
+        return AdminFeedback();
+      case 4:
         return const AdminProfile();
 
       case 0:

@@ -100,7 +100,7 @@ class ViewResponses extends StatelessWidget {
                         child: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
-                            'There are No waiting workers.',
+                            'You have no responses.',
                             style: TextStyle(
                                 fontSize: 30,
                                 color: kc30,

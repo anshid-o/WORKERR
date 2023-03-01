@@ -65,7 +65,7 @@ class _ScreenMainState extends State<ScreenMain> {
 
   final _pages = [
     ScreenHome(),
-    const ScreenPost(),
+    ScreenPost(),
     ScreenChat(),
     // const ScreenTopList(),
     const MyTabbedAppBar(),
@@ -160,7 +160,7 @@ class _ScreenMainState extends State<ScreenMain> {
   Widget buildPages() {
     switch (index) {
       case 1:
-        return const ScreenPost();
+        return ScreenPost();
       case 2:
         return ScreenChat();
       case 3:

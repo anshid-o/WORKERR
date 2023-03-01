@@ -144,7 +144,7 @@ class _ShowRequestState extends State<ShowRequest> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'You are not posted any works yet.',
+                              'You are not requested any works yet.',
                               style: TextStyle(
                                   fontSize: 30,
                                   color: kc30,

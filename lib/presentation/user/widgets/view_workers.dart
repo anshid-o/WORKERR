@@ -263,129 +263,133 @@ class _ViewWorkersState extends State<ViewWorkers> {
               )
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(kblue),
-                    padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 22, vertical: 5)),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: const BorderSide(color: kc30)))),
-                onPressed: () {
-                  final user = FirebaseAuth.instance.currentUser;
-                  final documentReference = FirebaseFirestore.instance
-                      .collection("Favorites")
-                      .doc(
-                          '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
-
-                  documentReference.get().then((documentSnapshot) {
-                    if (documentSnapshot.exists) {
-                      // The document exists
-                      final data = documentSnapshot.data();
-
-                      // You can now access the values stored in the document
-                      if (data!['status'] == true) {
-                        (FirebaseFirestore.instance
-                            .collection('Favorites')
+          widget.myDoc['uid'] != FirebaseAuth.instance.currentUser!.uid
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(kblue),
+                          padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  horizontal: 22, vertical: 5)),
+                          shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                  side: const BorderSide(color: kc30)))),
+                      onPressed: () {
+                        final user = FirebaseAuth.instance.currentUser;
+                        final documentReference = FirebaseFirestore.instance
+                            .collection("Favorites")
                             .doc(
-                                '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                            .update({'status': false}));
-                        setState(() {
-                          widget.flag = false;
+                                '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}');
+
+                        documentReference.get().then((documentSnapshot) {
+                          if (documentSnapshot.exists) {
+                            // The document exists
+                            final data = documentSnapshot.data();
+
+                            // You can now access the values stored in the document
+                            if (data!['status'] == true) {
+                              (FirebaseFirestore.instance
+                                  .collection('Favorites')
+                                  .doc(
+                                      '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                                  .update({'status': false}));
+                              setState(() {
+                                widget.flag = false;
+                              });
+                            } else {
+                              FirebaseFirestore.instance
+                                  .collection('Favorites')
+                                  .doc(
+                                      '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                                  .update({'status': true});
+                              setState(() {
+                                widget.flag = true;
+                              });
+                            }
+                            if (mounted) {
+                              if (widget.flag == false) {
+                                setState(() {
+                                  widget.count--;
+                                });
+                              } else {
+                                setState(() {
+                                  widget.count++;
+                                });
+                              }
+                            }
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection("Favorites")
+                                .doc(
+                                    '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
+                                .set({
+                              'status': true,
+                              'name': widget.myDoc['name'],
+                              'uid': FirebaseAuth.instance.currentUser!.uid,
+                              'wid': widget.myDoc['uid'],
+                              'time': DateTime.now()
+                            });
+                            setState(() {
+                              widget.flag = true;
+                            });
+                          }
                         });
-                      } else {
-                        FirebaseFirestore.instance
-                            .collection('Favorites')
-                            .doc(
-                                '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                            .update({'status': true});
-                        setState(() {
-                          widget.flag = true;
-                        });
-                      }
-                      if (mounted) {
-                        if (widget.flag == false) {
-                          setState(() {
-                            widget.count--;
-                          });
-                        } else {
-                          setState(() {
-                            widget.count++;
-                          });
-                        }
-                      }
-                    } else {
-                      FirebaseFirestore.instance
-                          .collection("Favorites")
-                          .doc(
-                              '${FirebaseAuth.instance.currentUser!.uid}${widget.myDoc['uid']}')
-                          .set({
-                        'status': true,
-                        'name': widget.myDoc['name'],
-                        'uid': FirebaseAuth.instance.currentUser!.uid,
-                        'wid': widget.myDoc['uid'],
-                        'time': DateTime.now()
-                      });
-                      setState(() {
-                        widget.flag = true;
-                      });
-                    }
-                  });
-                  // if (mounted) {
-                  //   if (widget.flag == true) {
-                  //     setState(() {
-                  //       widget.count--;
-                  //     });
-                  //   } else {
-                  //     setState(() {
-                  //       widget.count++;
-                  //     });
-                  //   }
-                  // }
-                },
-                icon: widget.flag
-                    ? const Icon(
-                        CupertinoIcons.heart_solid,
-                        color: kred,
-                        shadows: kshadow,
-                      )
-                    : const Icon(
-                        CupertinoIcons.heart,
-                        color: kred,
-                        shadows: kshadow,
-                      ),
-                label: const Text('Add to Favourite'),
-              ),
-              kwidth,
-              ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(kblue),
-                    padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 35, vertical: 11)),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: const BorderSide(color: kc30)))),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatScreen2(
-                            phone: widget.myDoc['phone'],
-                            name: widget.name,
-                            img: widget.img,
-                            id: widget.myDoc['uid']),
-                      ));
-                },
-                // icon: const Icon(Icons.chat),
-                child: const Text('Message'),
-              ),
-            ],
-          ),
+                        // if (mounted) {
+                        //   if (widget.flag == true) {
+                        //     setState(() {
+                        //       widget.count--;
+                        //     });
+                        //   } else {
+                        //     setState(() {
+                        //       widget.count++;
+                        //     });
+                        //   }
+                        // }
+                      },
+                      icon: widget.flag
+                          ? const Icon(
+                              CupertinoIcons.heart_solid,
+                              color: kred,
+                              shadows: kshadow,
+                            )
+                          : const Icon(
+                              CupertinoIcons.heart,
+                              color: kred,
+                              shadows: kshadow,
+                            ),
+                      label: const Text('Add to Favourite'),
+                    ),
+                    kwidth,
+                    ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(kblue),
+                          padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  horizontal: 35, vertical: 11)),
+                          shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                  side: const BorderSide(color: kc30)))),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen2(
+                                  phone: widget.myDoc['phone'],
+                                  name: widget.name,
+                                  img: widget.img,
+                                  id: widget.myDoc['uid']),
+                            ));
+                      },
+                      // icon: const Icon(Icons.chat),
+                      child: const Text('Message'),
+                    ),
+                  ],
+                )
+              : Center(),
           kheight30,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,6 +1,7 @@
 // import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/src/foundation/key.dart';
@@ -147,10 +148,13 @@ class _MyTabbedAppBarState extends State<MyTabbedAppBar> {
                               itemBuilder: (context, index) {
                                 DocumentSnapshot document =
                                     snapshot.data!.docs[index];
-                                return TopList2(
-                                  myDoc: document,
-                                  i: index,
-                                );
+                                return document['uid'] !=
+                                        FirebaseAuth.instance.currentUser!.uid
+                                    ? TopList2(
+                                        myDoc: document,
+                                        i: index,
+                                      )
+                                    : Center();
                               },
                               itemCount: snapshot.data!.docs.length < 20
                                   ? snapshot.data!.docs.length

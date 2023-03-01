@@ -12,12 +12,39 @@ import 'package:workerr_app/presentation/user/screens/main/home/show_requests.da
 import 'package:workerr_app/presentation/user/screens/main/home/user_page.dart';
 import 'package:workerr_app/presentation/user/screens/my_tabbed_appbar.dart';
 
-class MyNavigationDrawer extends StatelessWidget {
+class MyNavigationDrawer extends StatefulWidget {
   MyNavigationDrawer({
     super.key,
   });
+  int count = -1;
+  @override
+  State<MyNavigationDrawer> createState() => _MyNavigationDrawerState();
+}
+
+class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
   final firebase = FirebaseFirestore.instance;
+
   final user = FirebaseAuth.instance.currentUser!;
+
+  getData() async {
+    final a = await FirebaseFirestore.instance.collection("Workers").get();
+    if (mounted) {
+      for (var element in a.docs) {
+        if (element['uid'] == FirebaseAuth.instance.currentUser!.uid) {
+          setState(() {
+            widget.count = 1;
+          });
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    getData();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,54 +164,96 @@ class MyNavigationDrawer extends StatelessWidget {
                                   thickness: 1,
                                   color: Colors.grey,
                                 ),
-                                ListTile(
-                                  leading: const Icon(
-                                    Icons.work,
-                                    size: 30,
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ShowPost(),
+                                widget.count == 1
+                                    ? ListTile(
+                                        leading: const Icon(
+                                          Icons.work,
+                                          size: 30,
+                                        ),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ShowPost(),
+                                            ),
+                                          );
+                                        },
+                                        title: const Text(
+                                          'My posts',
+                                          style: TextStyle(
+                                              color: kc30,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    : ListTile(
+                                        leading: const Icon(
+                                          Icons.lock,
+                                          size: 30,
+                                        ),
+                                        onTap: () {
+                                          showDone(
+                                              context,
+                                              'Upgrade to worker to unlock',
+                                              Icons.workspace_premium,
+                                              Colors.amber);
+                                        },
+                                        title: const Text(
+                                          'My posts',
+                                          style: TextStyle(
+                                              color: kc30,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  title: const Text(
-                                    'My posts',
-                                    style: TextStyle(
-                                        color: kc30,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
                                 const Divider(
                                   thickness: 1,
                                   color: Colors.grey,
                                 ),
-                                ListTile(
-                                  leading: const Icon(
-                                    CupertinoIcons.time_solid,
-                                    size: 30,
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MyWorks(),
+                                widget.count == 1
+                                    ? ListTile(
+                                        leading: const Icon(
+                                          CupertinoIcons.time_solid,
+                                          size: 30,
+                                        ),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => MyWorks(),
+                                            ),
+                                          );
+                                        },
+                                        title: const Text(
+                                          'My works',
+                                          style: TextStyle(
+                                              color: kc30,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    : ListTile(
+                                        leading: const Icon(
+                                          Icons.workspace_premium,
+                                          size: 30,
+                                        ),
+                                        onTap: () {
+                                          showDone(
+                                              context,
+                                              'Upgrade to worker to unlock',
+                                              Icons.workspace_premium,
+                                              Colors.amber);
+                                        },
+                                        title: const Text(
+                                          'My works',
+                                          style: TextStyle(
+                                              color: kc30,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  title: const Text(
-                                    'My works',
-                                    style: TextStyle(
-                                        color: kc30,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
                                 const Divider(
                                   thickness: 1,
                                   color: Colors.grey,
