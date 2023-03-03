@@ -106,8 +106,7 @@ class _LoginState extends State<Login> {
                                         builder: (context) =>
                                             const ScreenMain(),
                                       ));
-                                },
-                                child: Container(
+                                },                            child: Container(
                                   width: size.width,
                                   height: 100,
                                   decoration: BoxDecoration(
