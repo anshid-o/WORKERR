@@ -178,6 +178,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                                     .signInWithEmailAndPassword(
                                                         email: kemail.text,
                                                         password: kpass.text);
+                                                setState(() {
+                                                  isloading = false;
+                                                });
                                                 Navigator.of(context)
                                                     .pushNamed('adminMain');
                                               } else {
