@@ -46,15 +46,15 @@ class NewShowWorkers extends StatefulWidget {
 
   List<String> rating = [
     'Rating',
-    '< 2 Star',
-    '< 2.5 Star',
-    '< 3 Star',
-    '< 3.5 Star',
-    '< 4 Star',
-    '< 4.5 Star',
-    '< 5 Star',
+    '>  2 Star',
+    '>  2.5 Star',
+    '>  3 Star',
+    '>  3.5 Star',
+    '>  4 Star',
+    '>  4.5 Star',
+    '   5 Star',
   ];
-  double rt = 5;
+  double rt = 0;
   String selectedrating = 'Rating';
   List<String> widList = [];
   FirebaseFirestore firebase = FirebaseFirestore.instance;
@@ -70,9 +70,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get()
         .then((value) => value.docs.forEach((element) {
-              setState(() {
-                widget.widList.add(element['wid']);
-              });
+              widget.widList.add(element['wid']);
             }));
   }
 
@@ -83,7 +81,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
           if (widget.pi == 0) {
             return widget.firebase
                 .collection("Workers")
-                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('rating', isGreaterThanOrEqualTo: widget.rt)
                 .where('uid', whereIn: widget.widList)
                 .where('job', isEqualTo: widget.work)
                 .snapshots();
@@ -92,7 +90,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                 .collection("Workers")
                 .where('pin', isEqualTo: widget.pinCodes[widget.pi])
                 .where('uid', whereIn: widget.widList)
-                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('rating', isGreaterThanOrEqualTo: widget.rt)
                 .where('job', isEqualTo: widget.work)
                 .snapshots();
           }
@@ -102,7 +100,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                 .collection("Workers")
                 .where('district', isEqualTo: widget.districts[widget.dis])
                 .where('uid', whereIn: widget.widList)
-                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('rating', isGreaterThanOrEqualTo: widget.rt)
                 .where('job', isEqualTo: widget.work)
                 .snapshots();
           } else {
@@ -111,7 +109,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
                 .where('pin', isEqualTo: widget.pinCodes[widget.pi])
                 .where('district', isEqualTo: widget.districts[widget.dis])
                 .where('uid', whereIn: widget.widList)
-                .where('rating', isLessThanOrEqualTo: widget.rt)
+                .where('rating', isGreaterThanOrEqualTo: widget.rt)
                 .where('job', isEqualTo: widget.work)
                 .snapshots();
           }
@@ -122,14 +120,14 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
         if (widget.pi == 0) {
           return widget.firebase
               .collection("Workers")
-              .where('rating', isLessThanOrEqualTo: widget.rt)
+              .where('rating', isGreaterThanOrEqualTo: widget.rt)
               .where('job', isEqualTo: widget.work)
               .snapshots();
         } else {
           return widget.firebase
               .collection("Workers")
               .where('pin', isEqualTo: widget.pinCodes[widget.pi])
-              .where('rating', isLessThanOrEqualTo: widget.rt)
+              .where('rating', isGreaterThanOrEqualTo: widget.rt)
               .where('job', isEqualTo: widget.work)
               .snapshots();
         }
@@ -138,7 +136,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
           return widget.firebase
               .collection("Workers")
               .where('district', isEqualTo: widget.districts[widget.dis])
-              .where('rating', isLessThanOrEqualTo: widget.rt)
+              .where('rating', isGreaterThanOrEqualTo: widget.rt)
               .where('job', isEqualTo: widget.work)
               .snapshots();
         } else {
@@ -146,7 +144,7 @@ class _NewShowWorkersState extends State<NewShowWorkers> {
               .collection("Workers")
               .where('pin', isEqualTo: widget.pinCodes[widget.pi])
               .where('district', isEqualTo: widget.districts[widget.dis])
-              .where('rating', isLessThanOrEqualTo: widget.rt)
+              .where('rating', isGreaterThanOrEqualTo: widget.rt)
               .where('job', isEqualTo: widget.work)
               .snapshots();
         }

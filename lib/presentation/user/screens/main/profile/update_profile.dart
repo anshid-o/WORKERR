@@ -22,12 +22,31 @@ class _UpdateProfileState extends State<UpdateProfile> {
   final kphone = TextEditingController();
   final kage = TextEditingController();
   final kplace = TextEditingController();
-  final kpin = TextEditingController();
-  final kdist = TextEditingController();
+
   XFile? file;
   String imageUrl = '';
   // late String _age;
   int? _value = 1;
+  List<String> districts = [
+    '🔻 Choose your district',
+    'Kozhikkode',
+    'Malappuram',
+    'Kannur',
+    'Vayanadu',
+    'Thrissur',
+  ];
+  String selectedDis = '🔻 Choose your district';
+  int dis = 0;
+  List<String> pinCodes = [
+    '🔻 Choose your Pin Code',
+    '673661',
+    '673662',
+    '673624',
+    '673667',
+    '673672',
+  ];
+  int pi = 0;
+  String selectedPin = '🔻 Choose your Pin Code';
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +98,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
               );
             default:
               DocumentSnapshot document = snapshot.data!.docs[0];
+              kname.text = document['name'];
+              kage.text = document['age'];
+              kplace.text = document['place'];
+              kphone.text = document['phone'];
               return snapshot.data!.docs.isNotEmpty
                   ? SingleChildScrollView(
                       keyboardDismissBehavior:
@@ -165,8 +188,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                 child: Column(
                               children: [
                                 TextFormField(
-                                  // initialValue: document['name'],
-                                  controller: kname,
+                                  initialValue: document['name'],
+                                  onChanged: (value) {
+                                    kname.text = value;
+                                  },
                                   keyboardType: TextInputType.name,
                                   obscureText: false,
                                   style: const TextStyle(color: kc60),
@@ -261,40 +286,212 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                     ),
                                   ],
                                 ),
-                                MyTextForm(
-                                  kt: kage,
-                                  name: 'Age',
-                                  icon: Icons.numbers,
-                                  type: TextInputType.number,
+                                TextFormField(
+                                  initialValue: document['age'],
+                                  onChanged: (value) {
+                                    kage.text = value;
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  obscureText: false,
+                                  style: const TextStyle(color: kc60),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: kc60.withOpacity(.2),
+                                    label: const Text(
+                                      'Age',
+                                      style: TextStyle(color: kc10),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.numbers,
+                                      color: kc10,
+                                    ),
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 2.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    hintStyle: const TextStyle(color: kc10),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 3.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                kheight20,
+                                TextFormField(
+                                  initialValue: document['phone'],
+                                  onChanged: (value) {
+                                    kphone.text = value;
+                                  },
+                                  keyboardType: TextInputType.phone,
+                                  obscureText: false,
+                                  style: const TextStyle(color: kc60),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: kc60.withOpacity(.2),
+                                    label: const Text(
+                                      'Phone No',
+                                      style: TextStyle(color: kc10),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.phone_android,
+                                      color: kc10,
+                                    ),
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 2.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    hintStyle: const TextStyle(color: kc10),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 3.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                kheight20,
+                                TextFormField(
+                                  initialValue: document['place'],
+                                  onChanged: (value) {
+                                    kplace.text = value;
+                                  },
+                                  keyboardType: TextInputType.streetAddress,
+                                  obscureText: false,
+                                  style: const TextStyle(color: kc60),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: kc60.withOpacity(.2),
+                                    label: const Text(
+                                      'Place',
+                                      style: TextStyle(color: kc10),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.location_city_rounded,
+                                      color: kc10,
+                                    ),
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 2.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    hintStyle: const TextStyle(color: kc10),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: kc10, width: 3.0),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0)),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                kheight20,
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * .9,
+                                  child: DropdownButtonFormField<String>(
+                                    icon: Icon(Icons.keyboard_arrow_down),
+                                    alignment: Alignment.centerLeft,
+                                    dropdownColor: kc30.withOpacity(.75),
+                                    focusColor: Colors.amber,
+                                    isExpanded: true,
+                                    // borderRadius: BorderRadius.circular(0),
+                                    decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            borderSide: const BorderSide(
+                                              width: 2.2,
+                                              color: kc10,
+                                            ))),
+                                    value: selectedDis,
+                                    items: districts
+                                        .map(
+                                          (item) => DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Text(
+                                              item,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (item) {
+                                      if (mounted) {
+                                        setState(() {
+                                          selectedDis = item!;
+                                          dis = districts.indexOf(item);
+                                        });
+                                      }
+                                    },
+                                  ),
                                 ),
                                 kheight20,
-                                MyTextForm(
-                                  kt: kphone,
-                                  name: 'Phone No',
-                                  icon: Icons.phone_android,
-                                  type: TextInputType.phone,
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * .9,
+                                  child: DropdownButtonFormField<String>(
+                                    icon: Icon(Icons.keyboard_arrow_down),
+                                    alignment: Alignment.centerLeft,
+                                    dropdownColor: kc30.withOpacity(.75),
+                                    focusColor: Colors.amber,
+                                    isExpanded: true,
+                                    decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            borderSide: const BorderSide(
+                                                width: 2.2, color: kc10))),
+                                    value: selectedPin,
+                                    items: pinCodes
+                                        .map(
+                                          (item) => DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Text(
+                                              item,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (item) {
+                                      if (mounted) {
+                                        setState(() {
+                                          selectedPin = item!;
+                                          pi = pinCodes.indexOf(item);
+                                        });
+                                      }
+                                    },
+                                  ),
                                 ),
-                                kheight20,
-                                MyTextForm(
-                                  kt: kplace,
-                                  name: 'Place',
-                                  icon: Icons.location_city_rounded,
-                                  type: TextInputType.streetAddress,
-                                ),
-                                kheight20,
-                                MyTextForm(
-                                  kt: kpin,
-                                  name: 'PIN Code',
-                                  icon: Icons.local_post_office,
-                                  type: TextInputType.number,
-                                ),
-                                kheight20,
-                                MyTextForm(
-                                  kt: kdist,
-                                  name: 'District',
-                                  icon: Icons.place,
-                                  type: TextInputType.streetAddress,
-                                ),
+
                                 kheight,
 
                                 // For Age
@@ -312,10 +509,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                   child: ElevatedButton(
                                     onPressed: () {
                                       if (kage.text.isEmpty ||
-                                          kdist.text.isEmpty ||
+                                          dis == 0 ||
                                           kname.text.isEmpty ||
                                           kphone.text.isEmpty ||
-                                          kpin.text.isEmpty ||
+                                          pi == 0 ||
                                           kplace.text.isEmpty) {
                                         showDone(
                                             context,
@@ -335,10 +532,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                           'age': kage.text,
                                           'gender': g,
                                           'place': kplace.text.trim(),
-                                          'district': kdist.text.trim(),
+                                          'district': selectedDis,
                                           'name': kname.text.trim(),
                                           'phone': kphone.text,
-                                          'pin': kpin.text,
+                                          'pin': selectedPin,
                                           'status': 'C'
                                         });
                                         Navigator.pop(context);

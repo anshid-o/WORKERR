@@ -39,7 +39,7 @@ class _Register2State extends State<Register2> {
   bool loading = false;
 
   final _formKeys = GlobalKey<FormState>();
-  double x = .58;
+  double x = .53;
 
   void sendOTP(String phoneNumber) async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -584,7 +584,7 @@ class _Register2State extends State<Register2> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pushNamed('login');
+                                      Navigator.pop(context);
                                     },
                                     child: const Text(
                                       "Login",

@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/core/constants.dart';
 
 // import 'package:workerr_app/core/colors.dart';
 import 'package:workerr_app/domain/firebase_helper.dart';
+import 'package:workerr_app/presentation/user/screens/authentication/login.dart';
 import 'package:workerr_app/presentation/user/screens/main/chat/screen_chat.dart';
 import 'package:workerr_app/presentation/user/screens/main/home/screen_home.dart';
 import 'package:workerr_app/presentation/user/screens/main/post/screen_post.dart';
@@ -34,9 +36,17 @@ class _ScreenMainState extends State<ScreenMain> {
   int count = -1;
   Service service = Service();
 
+  String rsn = '';
   final auth = FirebaseAuth.instance;
   getData() async {
     final a = await FirebaseFirestore.instance.collection("Workers").get();
+    final u = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    if (u.data()!.containsKey('reason')) {
+      rsn = u['reason'];
+    }
     if (mounted) {
       for (var element in a.docs) {
         if (element['uid'] == FirebaseAuth.instance.currentUser!.uid) {
@@ -75,20 +85,103 @@ class _ScreenMainState extends State<ScreenMain> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      // ),
-      backgroundColor: kc30,
-      // body: ValueListenableBuilder(
-      //   valueListenable: indexChangeNotifier,
-      //   builder: (context, int index, _) {
-      //     return _pages[index];
-      //   },
-      // ),
-      body: buildPages(),
-      bottomNavigationBar: buidbottomNavBAr(),
-    );
+    return rsn == ''
+        ? WillPopScope(
+            onWillPop: () async {
+              bool x = false;
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text(
+                      'Alert !',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    content: const Text('Are you sure, You want to exit ?'),
+                    actions: [
+                      ElevatedButton.icon(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.green)),
+                          onPressed: () {
+                            SystemNavigator.pop();
+                          },
+                          icon: const Icon(Icons.done),
+                          label: const Text('Exit')),
+                      ElevatedButton.icon(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.red)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.close),
+                          label: const Text('Cancel')),
+                    ],
+                  );
+                },
+              ); // Action to perform on back pressed
+              return x;
+            },
+            child: Scaffold(
+              backgroundColor: kc30,
+              // body: ValueListenableBuilder(
+              //   valueListenable: indexChangeNotifier,
+              //   builder: (context, int index, _) {
+              //     return _pages[index];
+              //   },
+              // ),
+              body: buildPages(),
+              bottomNavigationBar: buidbottomNavBAr(),
+            ),
+          )
+        : WillPopScope(
+            onWillPop: () async {
+              // Action to perform on back pressed
+              return false;
+            },
+            child: Center(
+              child: Container(
+                height: MediaQuery.of(context).size.height * .4,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: kc60),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      const Text(
+                        'Your account was banned by admin!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: kc30,
+                            fontSize: 25,
+                            decoration: TextDecoration.none),
+                      ),
+                      Text(
+                        'Reason :$rsn',
+                        style: const TextStyle(
+                            color: kc30,
+                            fontSize: 20,
+                            decoration: TextDecoration.none),
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Login(),
+                                ),
+                                (route) => false);
+                          },
+                          child: const Text('Exit'))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 
   Widget buidbottomNavBAr() {

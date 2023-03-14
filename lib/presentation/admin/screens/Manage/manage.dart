@@ -204,13 +204,13 @@ class _ManageUsersState extends State<ManageUsers> {
 }
 
 class TempCard2 extends StatelessWidget {
-  const TempCard2({
+  TempCard2({
     super.key,
     required this.document,
   });
 
   final DocumentSnapshot<Object?> document;
-
+  TextEditingController kreview = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -242,6 +242,7 @@ class TempCard2 extends StatelessWidget {
             ),
             trailing: IconButton(
               onPressed: () {
+                String review = '';
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -266,11 +267,60 @@ class TempCard2 extends StatelessWidget {
                               backgroundColor:
                                   MaterialStateProperty.all(Colors.red)),
                           onPressed: () {
-                            FirebaseFirestore.instance
-                                .collection('Users')
-                                .doc(document.id)
-                                .update({'status': 'D'});
                             Navigator.pop(context);
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    'Specify Reason',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  content: TextFormField(
+                                    controller: kreview,
+                                    minLines: 3,
+                                    maxLines: 5,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        label: const Text('Enter Reason')),
+                                  ),
+                                  actions: [
+                                    ElevatedButton.icon(
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.green)),
+                                        onPressed: () {
+                                          FirebaseFirestore.instance
+                                              .collection('Users')
+                                              .doc(document.id)
+                                              .update({
+                                            'status': 'D',
+                                            'reason': kreview.text
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                        icon: const Icon(Icons.done),
+                                        label: const Text('Proceed')),
+                                    ElevatedButton.icon(
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.red)),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          // updateStatus(context);
+                                        },
+                                        icon: const Icon(Icons.close),
+                                        label: const Text('Discard')),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           icon: const Icon(Icons.delete),
                           label: const Text('Delete'),

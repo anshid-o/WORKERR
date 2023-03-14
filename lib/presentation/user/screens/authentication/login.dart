@@ -98,24 +98,15 @@ class _LoginState extends State<Login> {
                           child: Column(
                             children: [
                               kheight30,
-                              InkWell(
-                                onDoubleTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ScreenMain(),
-                                      ));
-                                },                            child: Container(
-                                  width: size.width,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: const DecorationImage(
-                                          image: AssetImage(
-                                              'assets/workerr_gold.jpg'),
-                                          fit: BoxFit.cover)),
-                                ),
+                              Container(
+                                width: size.width,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: const DecorationImage(
+                                        image: AssetImage(
+                                            'assets/workerr_gold.jpg'),
+                                        fit: BoxFit.cover)),
                               ),
                               kheight20,
                               const Text(
